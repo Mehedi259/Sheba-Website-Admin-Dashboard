@@ -1,65 +1,94 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import { Users, Briefcase, Newspaper, MessageSquare } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+const data = [
+  { name: 'Jan', users: 400, jobs: 240, properties: 240 },
+  { name: 'Feb', users: 300, jobs: 139, properties: 221 },
+  { name: 'Mar', users: 200, jobs: 980, properties: 229 },
+  { name: 'Apr', users: 278, jobs: 390, properties: 200 },
+  { name: 'May', users: 189, jobs: 480, properties: 218 },
+  { name: 'Jun', users: 239, jobs: 380, properties: 250 },
+];
+
+export default function Dashboard() {
+  const [stats, setStats] = useState({
+    user_count: 0,
+    job_count: 0,
+    property_count: 0,
+    vehicle_count: 0,
+    service_count: 0,
+    news_count: 0,
+    post_count: 0,
+    total_classifieds: 0,
+  });
+
+  useEffect(() => {
+    // In a real scenario, this might call a specific endpoint for dashboard stats.
+    setStats({
+      user_count: 1250,
+      job_count: 342,
+      property_count: 145,
+      vehicle_count: 89,
+      service_count: 210,
+      news_count: 45,
+      post_count: 890,
+      total_classifieds: 786,
+    });
+  }, []);
+
+  const statCards = [
+    { name: 'Total Users', value: stats.user_count, icon: Users, color: 'bg-blue-500' },
+    { name: 'Total Classifieds', value: stats.total_classifieds, icon: Briefcase, color: 'bg-indigo-500' },
+    { name: 'News Articles', value: stats.news_count, icon: Newspaper, color: 'bg-emerald-500' },
+    { name: 'Community Posts', value: stats.post_count, icon: MessageSquare, color: 'bg-purple-500' },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div>
+      <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-8">
+        Dashboard Overview
+      </h2>
+
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        {statCards.map((stat) => (
+          <div key={stat.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 border border-gray-100">
+            <div className="flex items-center">
+              <div className={`flex-shrink-0 rounded-md p-3 ${stat.color}`}>
+                <stat.icon className="h-6 w-6 text-white" aria-hidden="true" />
+              </div>
+              <div className="ml-5 w-0 flex-1">
+                <dl>
+                  <dt className="truncate text-sm font-medium text-gray-500">{stat.name}</dt>
+                  <dd>
+                    <div className="text-lg font-medium text-gray-900">{stat.value.toLocaleString()}</div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8 rounded-lg bg-white p-6 shadow border border-gray-100">
+        <h3 className="text-base font-semibold leading-6 text-gray-900 mb-4">Growth Overview</h3>
+        <div className="h-80 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280' }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280' }} />
+              <Tooltip
+                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+              />
+              <Bar dataKey="users" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Users" />
+              <Bar dataKey="jobs" fill="#6366f1" radius={[4, 4, 0, 0]} name="Jobs" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }

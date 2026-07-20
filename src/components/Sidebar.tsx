@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
   Users, 
+  Image as ImageIcon,
   Briefcase, 
   AlertTriangle, 
   Newspaper, 
@@ -17,6 +18,7 @@ import { useRouter } from 'next/navigation';
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Users', href: '/users', icon: Users },
+  { name: 'Sliders', href: '/sliders', icon: ImageIcon },
   { name: 'Classifieds', href: '/classifieds', icon: Briefcase },
   { name: 'Emergency', href: '/emergency', icon: AlertTriangle },
   { name: 'News', href: '/news', icon: Newspaper },

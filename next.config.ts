@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://188.245.212.240/api/:path*', // Proxy to Hetzner Backend
+        destination: 'http://188.245.212.240/api/:path*/', // Proxy to Hetzner Backend with trailing slash
       },
     ];
   },

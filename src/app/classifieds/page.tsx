@@ -54,7 +54,7 @@ export default function ClassifiedsPage() {
     } else if (activeTab === 'properties') {
       initialData = { ...initialData, type: 'RESIDENTIAL', category: 'HOUSE', purpose: 'RENT', price: '' };
     } else if (activeTab === 'vehicles') {
-      initialData = { ...initialData, type: 'CAR', make: '', model: '', year: 2020, condition: 'USED_GOOD', transmission: 'AUTOMATIC', fuel_type: 'PETROL', price: '' };
+      initialData = { ...initialData, type: 'CAR', make: '', model: '', year: 2020, condition: 'USED_GOOD', transmission: 'AUTOMATIC', fuel_type: 'PETROL', price: '', mileage: '', color: '' };
     } else if (activeTab === 'services') {
       initialData = { ...initialData, category: '', service_type: '' };
     }
@@ -343,6 +343,34 @@ export default function ClassifiedsPage() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Price (OMR)</label>
                       <input type="number" name="price" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.price || ''} onChange={handleChange} required />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Transmission</label>
+                      <select name="transmission" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.transmission || 'AUTOMATIC'} onChange={handleChange}>
+                        <option value="AUTOMATIC">Automatic</option>
+                        <option value="MANUAL">Manual</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Fuel Type</label>
+                      <select name="fuel_type" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.fuel_type || 'PETROL'} onChange={handleChange}>
+                        <option value="PETROL">Petrol</option>
+                        <option value="DIESEL">Diesel</option>
+                        <option value="ELECTRIC">Electric</option>
+                        <option value="HYBRID">Hybrid</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Mileage (KM)</label>
+                      <input type="number" name="mileage" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.mileage || ''} onChange={handleChange} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Color</label>
+                      <input type="text" name="color" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.color || ''} onChange={handleChange} />
                     </div>
                   </div>
                 </>

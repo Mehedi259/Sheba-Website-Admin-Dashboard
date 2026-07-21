@@ -218,9 +218,6 @@ export default function SlidersPage() {
           </div>
         </div>
       )}
-          ))
-        )}
-      </div>
     </div>
   );
 }

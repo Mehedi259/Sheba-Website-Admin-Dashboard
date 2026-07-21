@@ -76,7 +76,7 @@ export default function ClassifiedsPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      let response;
+      let response: any;
       if (editId) {
         response = await api.put(`/admin/${activeTab}/${editId}/`, formData);
         setData(data.map(item => item.id === editId ? response.data : item));

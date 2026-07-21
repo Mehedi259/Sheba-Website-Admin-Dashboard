@@ -14,6 +14,7 @@ export default function ClassifiedsPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
   
   // Generic form data for all types
   const [formData, setFormData] = useState<any>({});
@@ -56,18 +57,33 @@ export default function ClassifiedsPage() {
     } else if (activeTab === 'vehicles') {
       initialData = { ...initialData, type: 'CAR', make: '', model: '', year: 2020, condition: 'USED_GOOD', transmission: 'AUTOMATIC', fuel_type: 'PETROL', price: '', mileage: '', color: '' };
     } else if (activeTab === 'services') {
-      initialData = { ...initialData, category: '', service_type: '' };
+      initialData = { ...initialData, category: 'Medical Services', service_type: '' };
     }
     setFormData(initialData);
+    setSelectedImage(null);
+    setEditId(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (item: any) => {
+    setFormData({ ...item });
+    setEditId(item.id);
     setSelectedImage(null);
     setIsModalOpen(true);
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await api.post(`/admin/${activeTab}/`, formData);
+      let response;
+      if (editId) {
+        response = await api.put(`/admin/${activeTab}/${editId}/`, formData);
+        setData(data.map(item => item.id === editId ? response.data : item));
+      } else {
+        response = await api.post(`/admin/${activeTab}/`, formData);
+        setData([response.data, ...data]);
+      }
       
       // Upload image if selected
       if (selectedImage && response.data.id) {
@@ -87,15 +103,18 @@ export default function ClassifiedsPage() {
           await api.post('/classifieds/images/', imageFormData, {
             headers: { 'Content-Type': 'multipart/form-data' }
           });
+          
+          // Re-fetch to get updated images if needed, or just let it be
+          fetchData();
         } catch (imgErr) {
           console.error("Failed to upload image", imgErr);
         }
       }
 
-      setData([response.data, ...data]);
       setIsModalOpen(false);
       setFormData({});
       setSelectedImage(null);
+      setEditId(null);
     } catch (err: any) {
       alert(err.response?.data?.detail || `Failed to create ${activeTab.slice(0, -1)}`);
       console.error(err.response?.data);
@@ -198,7 +217,8 @@ export default function ClassifiedsPage() {
                         {item.status}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
-                        <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
+                        <button onClick={() => handleEdit(item)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">Edit</button>
+                        <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900 px-2 py-1 text-xs bg-red-50 rounded"><Trash2 className="h-4 w-4" /></button>
                       </td>
                     </tr>
                   ))}
@@ -219,7 +239,7 @@ export default function ClassifiedsPage() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <form onSubmit={handleCreate} className="p-4 space-y-4">
+            <form onSubmit={handleSave} className="p-4 space-y-4">
               {/* Common Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -382,7 +402,20 @@ export default function ClassifiedsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Category</label>
-                      <input type="text" name="category" placeholder="e.g. Cleaning" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.category || ''} onChange={handleChange} required />
+                      <select name="category" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.category || 'Medical Services'} onChange={handleChange} required>
+                        <option value="Specialist Doctor">Specialist Doctor</option>
+                        <option value="Travel Agency">Travel Agency</option>
+                        <option value="Maktab Sanad">Maktab Sanad</option>
+                        <option value="Money Exchange">Money Exchange</option>
+                        <option value="Lawyer">Lawyer</option>
+                        <option value="Tourist Place">Tourist Place</option>
+                        <option value="Medical Services">Medical Services</option>
+                        <option value="Educational Institutions">Educational Institutions</option>
+                        <option value="Visa Services">Visa Services</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="Other">Other</option>
+                      </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Service Type</label>
@@ -405,7 +438,7 @@ export default function ClassifiedsPage() {
                   disabled={submitting || !formData.title}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px] capitalize"
                 >
-                  {submitting ? 'Creating...' : `Create ${activeTab.slice(0, -1)}`}
+                  {submitting ? 'Saving...' : editId ? 'Save Changes' : `Create ${activeTab.slice(0, -1)}`}
                 </button>
               </div>
             </form>

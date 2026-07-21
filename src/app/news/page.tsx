@@ -12,6 +12,7 @@ export default function NewsPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
   const [formData, setFormData] = useState({ title: '', content: '', type: 'NEWS', status: 'PUBLISHED' });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
@@ -40,7 +41,26 @@ export default function NewsPage() {
     }
   };
 
-  const handleCreateArticle = async (e: React.FormEvent) => {
+  const handleOpenModal = () => {
+    setFormData({ title: '', content: '', type: 'NEWS', status: 'PUBLISHED' });
+    setSelectedImage(null);
+    setEditId(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (article: any) => {
+    setFormData({
+      title: article.title || '',
+      content: article.content || '',
+      type: article.type || 'NEWS',
+      status: article.status || 'PUBLISHED',
+    });
+    setEditId(article.id);
+    setSelectedImage(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim() || !formData.content.trim()) return;
     
@@ -55,15 +75,23 @@ export default function NewsPage() {
         formPayload.append('featured_image', selectedImage);
       }
 
-      const response = await api.post('/admin/articles/', formPayload, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setArticles([response.data, ...articles]);
+      if (editId) {
+        const response = await api.put(`/admin/articles/${editId}/`, formPayload, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        setArticles(articles.map(a => a.id === editId ? response.data : a));
+      } else {
+        const response = await api.post('/admin/articles/', formPayload, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        setArticles([response.data, ...articles]);
+      }
       setIsModalOpen(false);
       setFormData({ title: '', content: '', type: 'NEWS', status: 'PUBLISHED' });
       setSelectedImage(null);
+      setEditId(null);
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to create article');
+      alert(err.response?.data?.detail || 'Failed to save article');
     } finally {
       setSubmitting(false);
     }
@@ -86,7 +114,7 @@ export default function NewsPage() {
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenModal}
             type="button"
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 flex items-center gap-2"
           >
@@ -132,7 +160,8 @@ export default function NewsPage() {
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{article.views}</td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
-                        <button onClick={() => handleDelete(article.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
+                        <button onClick={() => handleEdit(article)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">Edit</button>
+                        <button onClick={() => handleDelete(article.id)} className="text-red-600 hover:text-red-900 px-2 py-1 text-xs bg-red-50 rounded"><Trash2 className="h-4 w-4" /></button>
                       </td>
                     </tr>
                   ))}
@@ -148,12 +177,12 @@ export default function NewsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">Create News Article</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'Edit Article' : 'Create Article'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <form onSubmit={handleCreateArticle} className="p-4 space-y-4">
+            <form onSubmit={handleSave} className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Title</label>
                 <input
@@ -227,7 +256,7 @@ export default function NewsPage() {
                   disabled={submitting || !formData.title || !formData.content}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px]"
                 >
-                  {submitting ? 'Creating...' : 'Create'}
+                  {submitting ? 'Saving...' : editId ? 'Save Changes' : 'Create Article'}
                 </button>
               </div>
             </form>

@@ -9,6 +9,18 @@ export default function SlidersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    subtitle: '',
+    cta_text: '',
+    link: '',
+    order: 0,
+    is_active: true
+  });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const fetchSliders = async () => {
     try {
@@ -40,13 +52,13 @@ export default function SlidersPage() {
     if (!file) return;
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('title', file.name);
-    formData.append('order', '0');
+    const data = new FormData();
+    data.append('image', file);
+    data.append('title', file.name);
+    data.append('order', '0');
 
     try {
-      await api.post('/admin/sliders/', formData, {
+      await api.post('/admin/sliders/', data, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       fetchSliders(); // refresh list
@@ -55,6 +67,55 @@ export default function SlidersPage() {
     } finally {
       setUploading(false);
     }
+  };
+
+  const openEditModal = (slider: any) => {
+    setEditId(slider.id);
+    setFormData({
+      title: slider.title || '',
+      subtitle: slider.subtitle || '',
+      cta_text: slider.cta_text || '',
+      link: slider.link || '',
+      order: slider.order || 0,
+      is_active: slider.is_active ?? true,
+    });
+    setSelectedImage(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editId === null) return;
+    
+    setSubmitting(true);
+    const data = new FormData();
+    data.append('title', formData.title);
+    data.append('subtitle', formData.subtitle);
+    data.append('cta_text', formData.cta_text);
+    data.append('link', formData.link);
+    data.append('order', formData.order.toString());
+    data.append('is_active', formData.is_active ? 'true' : 'false');
+    
+    if (selectedImage) {
+      data.append('image', selectedImage);
+    }
+
+    try {
+      await api.patch(`/admin/sliders/${editId}/`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      fetchSliders();
+      setIsModalOpen(false);
+    } catch (err: any) {
+      alert(err.response?.data?.detail || 'Failed to update slider');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   return (
@@ -92,11 +153,71 @@ export default function SlidersPage() {
               </div>
               <div className="p-4 flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-900 truncate">{slider.title}</span>
-                <button onClick={() => handleDelete(slider.id)} className="text-red-500 hover:text-red-700 p-1">
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                <div className="flex gap-2">
+                  <button onClick={() => openEditModal(slider)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">
+                    Edit
+                  </button>
+                  <button onClick={() => handleDelete(slider.id)} className="text-red-500 hover:text-red-700 p-1">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
+          ))
+        )}
+      </div>
+
+      {/* Edit Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">Edit Slider</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
+                <span className="text-xl">×</span>
+              </button>
+            </div>
+            <form onSubmit={handleSave} className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <input type="text" name="title" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.title} onChange={handleChange} required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Subtitle</label>
+                <input type="text" name="subtitle" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.subtitle} onChange={handleChange} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">CTA Text</label>
+                  <input type="text" name="cta_text" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.cta_text} onChange={handleChange} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Order</label>
+                  <input type="number" name="order" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.order} onChange={handleChange} />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Link URL</label>
+                <input type="text" name="link" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.link} onChange={handleChange} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Replace Image (Optional)</label>
+                <input type="file" accept="image/*" className="mt-1 block w-full text-sm" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} />
+              </div>
+              <div className="flex items-center mt-4">
+                <input id="is_active" name="is_active" type="checkbox" className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" checked={formData.is_active} onChange={handleChange} />
+                <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">Active</label>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+                <button type="submit" disabled={submitting} className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 min-w-[80px]">
+                  {submitting ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
           ))
         )}
       </div>

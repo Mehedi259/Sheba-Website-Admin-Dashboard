@@ -14,6 +14,7 @@ export default function CommunityPage() {
   const [newContent, setNewContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
 
   const fetchPosts = async () => {
     try {
@@ -40,7 +41,21 @@ export default function CommunityPage() {
     }
   };
 
-  const handleCreatePost = async (e: React.FormEvent) => {
+  const handleOpenModal = () => {
+    setNewContent('');
+    setSelectedImage(null);
+    setEditId(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (post: any) => {
+    setNewContent(post.content || '');
+    setEditId(post.id);
+    setSelectedImage(null);
+    setIsModalOpen(true);
+  };
+
+  const handleSavePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newContent.trim()) {
       alert('Content cannot be empty');
@@ -55,15 +70,23 @@ export default function CommunityPage() {
         formData.append('image', selectedImage);
       }
       
-      const response = await api.post('/admin/posts/', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setPosts([response.data, ...posts]);
+      if (editId) {
+        const response = await api.put(`/admin/posts/${editId}/`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        setPosts(posts.map(p => p.id === editId ? response.data : p));
+      } else {
+        const response = await api.post('/admin/posts/', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        setPosts([response.data, ...posts]);
+      }
       setIsModalOpen(false);
       setNewContent('');
       setSelectedImage(null);
+      setEditId(null);
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to create post');
+      alert(err.response?.data?.detail || 'Failed to save post');
     } finally {
       setSubmitting(false);
     }
@@ -82,7 +105,7 @@ export default function CommunityPage() {
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenModal}
             type="button"
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 flex items-center gap-2"
           >
@@ -124,7 +147,8 @@ export default function CommunityPage() {
                         {post.likes_count || 0}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
-                        <button onClick={() => handleDelete(post.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
+                        <button onClick={() => handleEdit(post)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">Edit</button>
+                        <button onClick={() => handleDelete(post.id)} className="text-red-600 hover:text-red-900 px-2 py-1 text-xs bg-red-50 rounded"><Trash2 className="h-4 w-4" /></button>
                       </td>
                     </tr>
                   ))}
@@ -140,12 +164,12 @@ export default function CommunityPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">Create Community Post</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'Edit Post' : 'Create New Post'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <form onSubmit={handleCreatePost} className="p-4">
+            <form onSubmit={handleSavePost} className="p-4 space-y-4">
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">Content</label>
                 <textarea
@@ -179,7 +203,7 @@ export default function CommunityPage() {
                   disabled={submitting || !newContent.trim()}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px]"
                 >
-                  {submitting ? 'Posting...' : 'Post'}
+                  {submitting ? 'Saving...' : editId ? 'Save Changes' : 'Create Post'}
                 </button>
               </div>
             </form>

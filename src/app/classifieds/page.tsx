@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Plus, X } from 'lucide-react';
 import api from '@/lib/api';
 
 export default function ClassifiedsPage() {
@@ -9,6 +9,13 @@ export default function ClassifiedsPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  
+  // Generic form data for all types
+  const [formData, setFormData] = useState<any>({});
 
   const fetchData = async () => {
     setLoading(true);
@@ -25,6 +32,8 @@ export default function ClassifiedsPage() {
 
   useEffect(() => {
     fetchData();
+    // Reset form when tab changes
+    setFormData({});
   }, [activeTab]);
 
   const handleDelete = async (id: number) => {
@@ -35,6 +44,40 @@ export default function ClassifiedsPage() {
     } catch (err: any) {
       alert('Failed to delete');
     }
+  };
+
+  const handleOpenModal = () => {
+    let initialData: any = { title: '', city: '', status: 'PUBLISHED' };
+    if (activeTab === 'jobs') {
+      initialData = { ...initialData, type: 'FULL_TIME', company_name_en: '', description: '' };
+    } else if (activeTab === 'properties') {
+      initialData = { ...initialData, type: 'RESIDENTIAL', category: 'HOUSE', purpose: 'RENT', price: '' };
+    } else if (activeTab === 'vehicles') {
+      initialData = { ...initialData, type: 'CAR', make: '', model: '', year: 2020, condition: 'USED_GOOD', transmission: 'AUTOMATIC', fuel_type: 'PETROL', price: '' };
+    } else if (activeTab === 'services') {
+      initialData = { ...initialData, category: '', service_type: '', description: '' };
+    }
+    setFormData(initialData);
+    setIsModalOpen(true);
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const response = await api.post(`/admin/${activeTab}/`, formData);
+      setData([response.data, ...data]);
+      setIsModalOpen(false);
+    } catch (err: any) {
+      alert(err.response?.data?.detail || `Failed to create ${activeTab.slice(0, -1)}`);
+      console.error(err.response?.data);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const tabs = [
@@ -54,6 +97,16 @@ export default function ClassifiedsPage() {
           <p className="mt-2 text-sm text-gray-700">
             Manage all classified ads posted by users.
           </p>
+        </div>
+        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <button
+            onClick={handleOpenModal}
+            type="button"
+            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 flex items-center gap-2 capitalize"
+          >
+            <Plus className="h-4 w-4" />
+            Add New {activeTab.slice(0, -1)}
+          </button>
         </div>
       </div>
       
@@ -89,25 +142,29 @@ export default function ClassifiedsPage() {
                   <tr>
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Title</th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Details</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">City</th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {loading ? (
-                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">Loading {activeTab}...</td></tr>
+                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">Loading {activeTab}...</td></tr>
                   ) : data.length === 0 ? (
-                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">No {activeTab} found.</td></tr>
+                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">No {activeTab} found.</td></tr>
                   ) : data.map((item) => (
                     <tr key={item.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {item.title}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {activeTab === 'jobs' && item.company_name}
-                        {activeTab === 'properties' && item.property_type}
-                        {activeTab === 'vehicles' && item.brand}
-                        {activeTab === 'services' && item.category}
+                        {activeTab === 'jobs' && (item.type + ' | ' + (item.company?.name || 'Company'))}
+                        {activeTab === 'properties' && (item.type + ' | ' + item.category)}
+                        {activeTab === 'vehicles' && (item.make + ' ' + item.model + ' (' + item.year + ')')}
+                        {activeTab === 'services' && (item.category + ' | ' + item.service_type)}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {item.city}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {item.status}
@@ -123,6 +180,171 @@ export default function ClassifiedsPage() {
           </div>
         </div>
       </div>
+
+      {/* Dynamic Creation Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 my-8">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900 capitalize">Create New {activeTab.slice(0, -1)}</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleCreate} className="p-4 space-y-4">
+              {/* Common Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Title <span className="text-red-500">*</span></label>
+                  <input type="text" name="title" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.title || ''} onChange={handleChange} required />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">City <span className="text-red-500">*</span></label>
+                  <input type="text" name="city" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.city || ''} onChange={handleChange} required />
+                </div>
+              </div>
+
+              {/* Jobs Specific Fields */}
+              {activeTab === 'jobs' && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Job Type</label>
+                      <select name="type" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.type || 'FULL_TIME'} onChange={handleChange}>
+                        <option value="FULL_TIME">Full Time</option>
+                        <option value="PART_TIME">Part Time</option>
+                        <option value="CONTRACT">Contract</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Company Name (English)</label>
+                      <input type="text" name="company_name_en" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.company_name_en || ''} onChange={handleChange} required />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea name="description" rows={3} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.description || ''} onChange={handleChange} required />
+                  </div>
+                </>
+              )}
+
+              {/* Properties Specific Fields */}
+              {activeTab === 'properties' && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Type</label>
+                      <select name="type" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.type || 'RESIDENTIAL'} onChange={handleChange}>
+                        <option value="RESIDENTIAL">Residential</option>
+                        <option value="COMMERCIAL">Commercial</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Category</label>
+                      <select name="category" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.category || 'HOUSE'} onChange={handleChange}>
+                        <option value="HOUSE">House</option>
+                        <option value="FLAT">Flat</option>
+                        <option value="APARTMENT">Apartment</option>
+                        <option value="OFFICE">Office</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Purpose</label>
+                      <select name="purpose" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.purpose || 'RENT'} onChange={handleChange}>
+                        <option value="RENT">Rent</option>
+                        <option value="SALE">Sale</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Price (OMR)</label>
+                    <input type="number" name="price" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.price || ''} onChange={handleChange} required />
+                  </div>
+                </>
+              )}
+
+              {/* Vehicles Specific Fields */}
+              {activeTab === 'vehicles' && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Type</label>
+                      <select name="type" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.type || 'CAR'} onChange={handleChange}>
+                        <option value="CAR">Car</option>
+                        <option value="MOTORCYCLE">Motorcycle</option>
+                        <option value="TRUCK">Truck</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Make (Brand)</label>
+                      <input type="text" name="make" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.make || ''} onChange={handleChange} required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Model</label>
+                      <input type="text" name="model" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.model || ''} onChange={handleChange} required />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Year</label>
+                      <input type="number" name="year" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.year || ''} onChange={handleChange} required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Condition</label>
+                      <select name="condition" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.condition || 'USED_GOOD'} onChange={handleChange}>
+                        <option value="NEW">New</option>
+                        <option value="USED_LIKE_NEW">Used - Like New</option>
+                        <option value="USED_GOOD">Used - Good</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Price (OMR)</label>
+                      <input type="number" name="price" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.price || ''} onChange={handleChange} required />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Services Specific Fields */}
+              {activeTab === 'services' && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Category</label>
+                      <input type="text" name="category" placeholder="e.g. Cleaning" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.category || ''} onChange={handleChange} required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Service Type</label>
+                      <input type="text" name="service_type" placeholder="e.g. Deep Cleaning" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.service_type || ''} onChange={handleChange} required />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea name="description" rows={3} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.description || ''} onChange={handleChange} required />
+                  </div>
+                </>
+              )}
+
+              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting || !formData.title}
+                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px] capitalize"
+                >
+                  {submitting ? 'Creating...' : `Create ${activeTab.slice(0, -1)}`}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

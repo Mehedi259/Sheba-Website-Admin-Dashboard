@@ -1,13 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Plus, X } from 'lucide-react';
 import api from '@/lib/api';
 
 export default function EmergencyPage() {
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    service_type: 'AMBULANCE',
+    phone_number: '',
+    is_24_7: false
+  });
 
   const fetchServices = async () => {
     try {
@@ -34,6 +44,28 @@ export default function EmergencyPage() {
     }
   };
 
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.phone_number) return;
+    
+    setSubmitting(true);
+    try {
+      const response = await api.post('/admin/emergency-services/', formData);
+      setServices([response.data, ...services]);
+      setIsModalOpen(false);
+      setFormData({ name: '', service_type: 'AMBULANCE', phone_number: '', is_24_7: false });
+    } catch (err: any) {
+      alert(err.response?.data?.detail || 'Failed to create emergency service');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
+    setFormData({ ...formData, [e.target.name]: value });
+  };
+
   return (
     <div>
       <div className="sm:flex sm:items-center mb-8">
@@ -44,6 +76,16 @@ export default function EmergencyPage() {
           <p className="mt-2 text-sm text-gray-700">
             Manage emergency service providers (Ambulance, Fire, Police, etc.)
           </p>
+        </div>
+        <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            type="button"
+            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add New Service
+          </button>
         </div>
       </div>
       
@@ -89,6 +131,94 @@ export default function EmergencyPage() {
           </div>
         </div>
       </div>
+
+      {/* Create Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">Create Emergency Service</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form onSubmit={handleCreate} className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Service Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="e.g., City General Hospital"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Service Type</label>
+                <select
+                  name="service_type"
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
+                  value={formData.service_type}
+                  onChange={handleChange}
+                >
+                  <option value="AMBULANCE">Ambulance</option>
+                  <option value="FIRE">Fire</option>
+                  <option value="POLICE">Police</option>
+                  <option value="HOSPITAL">Hospital</option>
+                  <option value="PHARMACY">Pharmacy</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                <input
+                  type="text"
+                  name="phone_number"
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  placeholder="e.g., +968 1234 5678"
+                  required
+                />
+              </div>
+
+              <div className="flex items-center mt-4">
+                <input
+                  id="is_24_7"
+                  name="is_24_7"
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                  checked={formData.is_24_7}
+                  onChange={handleChange}
+                />
+                <label htmlFor="is_24_7" className="ml-2 block text-sm text-gray-900">
+                  Available 24/7
+                </label>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting || !formData.name || !formData.phone_number}
+                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px]"
+                >
+                  {submitting ? 'Creating...' : 'Create'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

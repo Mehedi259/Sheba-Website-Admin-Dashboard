@@ -3,15 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Users, Briefcase, Newspaper, MessageSquare } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-const data = [
-  { name: 'Jan', users: 400, jobs: 240, properties: 240 },
-  { name: 'Feb', users: 300, jobs: 139, properties: 221 },
-  { name: 'Mar', users: 200, jobs: 980, properties: 229 },
-  { name: 'Apr', users: 278, jobs: 390, properties: 200 },
-  { name: 'May', users: 189, jobs: 480, properties: 218 },
-  { name: 'Jun', users: 239, jobs: 380, properties: 250 },
-];
+import api from '@/lib/api';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -23,20 +15,19 @@ export default function Dashboard() {
     news_count: 0,
     post_count: 0,
     total_classifieds: 0,
+    growth_data: [],
   });
 
   useEffect(() => {
-    // In a real scenario, this might call a specific endpoint for dashboard stats.
-    setStats({
-      user_count: 1250,
-      job_count: 342,
-      property_count: 145,
-      vehicle_count: 89,
-      service_count: 210,
-      news_count: 45,
-      post_count: 890,
-      total_classifieds: 786,
-    });
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/admin/dashboard-stats/');
+        setStats(response.data);
+      } catch (error) {
+        console.error('Failed to fetch dashboard stats:', error);
+      }
+    };
+    fetchStats();
   }, []);
 
   const statCards = [
@@ -76,7 +67,7 @@ export default function Dashboard() {
         <h3 className="text-base font-semibold leading-6 text-gray-900 mb-4">Growth Overview</h3>
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <BarChart data={stats.growth_data || []} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280' }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280' }} />

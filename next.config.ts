@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         source: '/api/:path*',
         destination: 'http://188.245.212.240/api/:path*/', // Proxy to Hetzner Backend with trailing slash
       },
+      {
+        source: '/media/:path*',
+        destination: 'http://188.245.212.240/media/:path*', // Proxy for media files
+      },
     ];
   },
 };

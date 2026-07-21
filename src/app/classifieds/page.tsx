@@ -47,15 +47,15 @@ export default function ClassifiedsPage() {
   };
 
   const handleOpenModal = () => {
-    let initialData: any = { title: '', city: '', status: 'PUBLISHED' };
+    let initialData: any = { title: '', city: '', contact_phone: '', description: '', status: 'PUBLISHED' };
     if (activeTab === 'jobs') {
-      initialData = { ...initialData, type: 'FULL_TIME', company_name_en: '', description: '' };
+      initialData = { ...initialData, type: 'FULL_TIME', company_name_en: '' };
     } else if (activeTab === 'properties') {
       initialData = { ...initialData, type: 'RESIDENTIAL', category: 'HOUSE', purpose: 'RENT', price: '' };
     } else if (activeTab === 'vehicles') {
       initialData = { ...initialData, type: 'CAR', make: '', model: '', year: 2020, condition: 'USED_GOOD', transmission: 'AUTOMATIC', fuel_type: 'PETROL', price: '' };
     } else if (activeTab === 'services') {
-      initialData = { ...initialData, category: '', service_type: '', description: '' };
+      initialData = { ...initialData, category: '', service_type: '' };
     }
     setFormData(initialData);
     setIsModalOpen(true);
@@ -203,6 +203,16 @@ export default function ClassifiedsPage() {
                   <input type="text" name="city" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.city || ''} onChange={handleChange} required />
                 </div>
               </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Contact Phone <span className="text-red-500">*</span></label>
+                  <input type="text" name="contact_phone" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.contact_phone || ''} onChange={handleChange} required />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Description <span className="text-red-500">*</span></label>
+                <textarea name="description" rows={3} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.description || ''} onChange={handleChange} required />
+              </div>
 
               {/* Jobs Specific Fields */}
               {activeTab === 'jobs' && (
@@ -220,10 +230,6 @@ export default function ClassifiedsPage() {
                       <label className="block text-sm font-medium text-gray-700">Company Name (English)</label>
                       <input type="text" name="company_name_en" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.company_name_en || ''} onChange={handleChange} required />
                     </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea name="description" rows={3} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.description || ''} onChange={handleChange} required />
                   </div>
                 </>
               )}
@@ -317,10 +323,6 @@ export default function ClassifiedsPage() {
                       <label className="block text-sm font-medium text-gray-700">Service Type</label>
                       <input type="text" name="service_type" placeholder="e.g. Deep Cleaning" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.service_type || ''} onChange={handleChange} required />
                     </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea name="description" rows={3} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.description || ''} onChange={handleChange} required />
                   </div>
                 </>
               )}

@@ -88,7 +88,7 @@ export default function SlidersPage() {
           sliders.map((slider) => (
             <div key={slider.id} className="relative group bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
               <div className="aspect-video w-full bg-gray-100">
-                <img src={slider.image} alt={slider.title} className="h-full w-full object-cover" />
+                <img src={slider.image ? slider.image.replace(/^https?:\/\/[^\/]+/, '') : ''} alt={slider.title} className="h-full w-full object-cover" />
               </div>
               <div className="p-4 flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-900 truncate">{slider.title}</span>

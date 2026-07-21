@@ -14,8 +14,10 @@ export default function EmergencyPage() {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    service_type: 'AMBULANCE',
+    service_type: 'ambulance',
     phone_number: '',
+    address: '',
+    location: '',
     is_24_7: false
   });
 
@@ -53,7 +55,7 @@ export default function EmergencyPage() {
       const response = await api.post('/admin/emergency-services/', formData);
       setServices([response.data, ...services]);
       setIsModalOpen(false);
-      setFormData({ name: '', service_type: 'AMBULANCE', phone_number: '', is_24_7: false });
+      setFormData({ name: '', service_type: 'ambulance', phone_number: '', address: '', location: '', is_24_7: false });
     } catch (err: any) {
       alert(err.response?.data?.detail || 'Failed to create emergency service');
     } finally {
@@ -164,11 +166,12 @@ export default function EmergencyPage() {
                   value={formData.service_type}
                   onChange={handleChange}
                 >
-                  <option value="AMBULANCE">Ambulance</option>
-                  <option value="FIRE">Fire</option>
-                  <option value="POLICE">Police</option>
-                  <option value="HOSPITAL">Hospital</option>
-                  <option value="PHARMACY">Pharmacy</option>
+                  <option value="ambulance">Ambulance</option>
+                  <option value="fire">Fire</option>
+                  <option value="police">Police</option>
+                  <option value="hospital">Hospital</option>
+                  <option value="pharmacy">Pharmacy</option>
+                  <option value="blood_bank">Blood Bank</option>
                 </select>
               </div>
 
@@ -181,6 +184,32 @@ export default function EmergencyPage() {
                   value={formData.phone_number}
                   onChange={handleChange}
                   placeholder="e.g., +968 1234 5678"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Address</label>
+                <input
+                  type="text"
+                  name="address"
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="e.g., Al Khuwair, Muscat"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="e.g., Muscat"
                   required
                 />
               </div>

@@ -75,7 +75,9 @@ export default function UsersPage() {
                         {user.created_at ? new Date(user.created_at).toLocaleDateString() : ''}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
-                        <button onClick={() => handleDelete(user.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
+                        {user.email !== 'admin@sheba.om' && (
+                          <button onClick={() => handleDelete(user.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
+                        )}
                       </td>
                     </tr>
                   ))}

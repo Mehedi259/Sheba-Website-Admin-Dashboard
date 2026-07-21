@@ -12,11 +12,8 @@ export default function NewsPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    type: 'NEWS',
-    content: ''
-  });
+  const [formData, setFormData] = useState({ title: '', content: '', type: 'NEWS', status: 'PUBLISHED' });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const fetchArticles = async () => {
     try {
@@ -43,20 +40,28 @@ export default function NewsPage() {
     }
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleCreateArticle = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.content) return;
+    if (!formData.title.trim() || !formData.content.trim()) return;
     
     setSubmitting(true);
     try {
-      const payload = {
-        ...formData,
-        status: 'PUBLISHED' // Auto-publish from admin
-      };
-      const response = await api.post('/admin/articles/', payload);
+      const formPayload = new FormData();
+      formPayload.append('title', formData.title);
+      formPayload.append('content', formData.content);
+      formPayload.append('type', formData.type);
+      formPayload.append('status', formData.status);
+      if (selectedImage) {
+        formPayload.append('featured_image', selectedImage);
+      }
+
+      const response = await api.post('/admin/articles/', formPayload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       setArticles([response.data, ...articles]);
       setIsModalOpen(false);
-      setFormData({ title: '', type: 'NEWS', content: '' });
+      setFormData({ title: '', content: '', type: 'NEWS', status: 'PUBLISHED' });
+      setSelectedImage(null);
     } catch (err: any) {
       alert(err.response?.data?.detail || 'Failed to create article');
     } finally {
@@ -148,7 +153,7 @@ export default function NewsPage() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <form onSubmit={handleCreate} className="p-4 space-y-4">
+            <form onSubmit={handleCreateArticle} className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Title</label>
                 <input
@@ -173,6 +178,28 @@ export default function NewsPage() {
                   <option value="BLOG">Blog</option>
                   <option value="ANNOUNCEMENT">Announcement</option>
                 </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <select
+                  name="status"
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
+                  value={formData.status}
+                  onChange={handleChange}
+                >
+                  <option value="PUBLISHED">Published</option>
+                  <option value="DRAFT">Draft</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Featured Image (Optional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="mt-1 block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  onChange={(e) => setSelectedImage(e.target.files ? e.target.files[0] : null)}
+                />
               </div>
 
               <div>

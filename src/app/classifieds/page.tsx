@@ -9,6 +9,7 @@ export default function ClassifiedsPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,6 +59,7 @@ export default function ClassifiedsPage() {
       initialData = { ...initialData, category: '', service_type: '' };
     }
     setFormData(initialData);
+    setSelectedImage(null);
     setIsModalOpen(true);
   };
 
@@ -66,8 +68,34 @@ export default function ClassifiedsPage() {
     setSubmitting(true);
     try {
       const response = await api.post(`/admin/${activeTab}/`, formData);
+      
+      // Upload image if selected
+      if (selectedImage && response.data.id) {
+        try {
+          const imageFormData = new FormData();
+          imageFormData.append('image', selectedImage);
+          let contentType = '';
+          if (activeTab === 'jobs') contentType = 'job';
+          if (activeTab === 'properties') contentType = 'property';
+          if (activeTab === 'vehicles') contentType = 'vehicle';
+          if (activeTab === 'services') contentType = 'service';
+          
+          imageFormData.append('content_type', contentType);
+          imageFormData.append('content_id', response.data.id.toString());
+          imageFormData.append('is_primary', 'true');
+          
+          await api.post('/classifieds/images/', imageFormData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+        } catch (imgErr) {
+          console.error("Failed to upload image", imgErr);
+        }
+      }
+
       setData([response.data, ...data]);
       setIsModalOpen(false);
+      setFormData({});
+      setSelectedImage(null);
     } catch (err: any) {
       alert(err.response?.data?.detail || `Failed to create ${activeTab.slice(0, -1)}`);
       console.error(err.response?.data);
@@ -212,6 +240,15 @@ export default function ClassifiedsPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Description <span className="text-red-500">*</span></label>
                 <textarea name="description" rows={3} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.description || ''} onChange={handleChange} required />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Image (Optional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="mt-1 block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  onChange={(e) => setSelectedImage(e.target.files ? e.target.files[0] : null)}
+                />
               </div>
 
               {/* Jobs Specific Fields */}

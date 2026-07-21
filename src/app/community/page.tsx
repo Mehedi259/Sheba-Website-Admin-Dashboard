@@ -12,6 +12,7 @@ export default function CommunityPage() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newContent, setNewContent] = useState('');
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const fetchPosts = async () => {
@@ -39,16 +40,28 @@ export default function CommunityPage() {
     }
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newContent.trim()) return;
+    if (!newContent.trim()) {
+      alert('Content cannot be empty');
+      return;
+    }
     
     setSubmitting(true);
     try {
-      const response = await api.post('/admin/posts/', { content: newContent });
+      const formData = new FormData();
+      formData.append('content', newContent);
+      if (selectedImage) {
+        formData.append('image', selectedImage);
+      }
+      
+      const response = await api.post('/admin/posts/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       setPosts([response.data, ...posts]);
       setIsModalOpen(false);
       setNewContent('');
+      setSelectedImage(null);
     } catch (err: any) {
       alert(err.response?.data?.detail || 'Failed to create post');
     } finally {
@@ -60,7 +73,7 @@ export default function CommunityPage() {
     <div>
       <div className="sm:flex sm:items-center mb-8">
         <div className="sm:flex-auto">
-          <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+          <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-35 sm:tracking-tight">
             Community Posts
           </h2>
           <p className="mt-2 text-sm text-gray-700">
@@ -132,20 +145,28 @@ export default function CommunityPage() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <form onSubmit={handleCreate} className="p-4">
+            <form onSubmit={handleCreatePost} className="p-4">
               <div className="mb-4">
-                <label htmlFor="content" className="block text-sm font-medium text-gray-700">Content</label>
+                <label className="block text-sm font-medium text-gray-700">Content</label>
                 <textarea
-                  id="content"
-                  rows={4}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
+                  rows={4}
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                   placeholder="What's on your mind?"
                   required
                 />
               </div>
-              <div className="flex justify-end gap-3 mt-6">
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700">Image (Optional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="mt-1 block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  onChange={(e) => setSelectedImage(e.target.files ? e.target.files[0] : null)}
+                />
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}

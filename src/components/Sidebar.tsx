@@ -25,7 +25,12 @@ const navigation = [
   { name: 'Community', href: '/community', icon: MessageSquare },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  setIsOpen?: (isOpen: boolean) => void;
+}
+
+export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -37,10 +42,23 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="flex h-screen w-64 flex-col bg-gray-900 text-white transition-all duration-300">
-      <div className="flex h-16 shrink-0 items-center px-6">
-        <h1 className="text-xl font-bold tracking-tight text-white">Sheba Admin</h1>
-      </div>
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-gray-900/80 lg:hidden"
+          onClick={() => setIsOpen?.(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={clsx(
+        "fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col bg-gray-900 text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <div className="flex h-16 shrink-0 items-center px-6">
+          <h1 className="text-xl font-bold tracking-tight text-white">Sheba Admin</h1>
+        </div>
       <nav className="flex flex-1 flex-col px-4 py-4 overflow-y-auto">
         <ul role="list" className="flex flex-1 flex-col gap-y-2">
           <li>
@@ -84,5 +102,6 @@ export default function Sidebar() {
         </ul>
       </nav>
     </div>
+    </>
   );
 }

@@ -10,6 +10,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('access_token');
@@ -36,10 +37,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   // Render the dashboard layout for authenticated users
   return (
-    <div className="h-full flex overflow-hidden w-full">
-      <Sidebar />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header />
+    <div className="h-full flex overflow-hidden w-full relative">
+      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+      <div className="flex flex-1 flex-col overflow-hidden w-full">
+        <Header setSidebarOpen={setSidebarOpen} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {children}
         </main>

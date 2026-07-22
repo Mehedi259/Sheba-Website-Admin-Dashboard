@@ -47,26 +47,18 @@ export default function SlidersPage() {
     }
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    const data = new FormData();
-    data.append('image', file);
-    data.append('title', file.name);
-    data.append('order', '0');
-
-    try {
-      await api.post('/admin/sliders/', data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      fetchSliders(); // refresh list
-    } catch (err: any) {
-      alert('Failed to upload slider');
-    } finally {
-      setUploading(false);
-    }
+  const openAddModal = () => {
+    setEditId(null);
+    setFormData({
+      title: '',
+      subtitle: '',
+      cta_text: '',
+      link: '',
+      order: 0,
+      is_active: true
+    });
+    setSelectedImage(null);
+    setIsModalOpen(true);
   };
 
   const openEditModal = (slider: any) => {
@@ -85,7 +77,10 @@ export default function SlidersPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editId === null) return;
+    if (editId === null && !selectedImage) {
+      alert('Please select an image');
+      return;
+    }
     
     setSubmitting(true);
     const data = new FormData();
@@ -101,13 +96,19 @@ export default function SlidersPage() {
     }
 
     try {
-      await api.patch(`/admin/sliders/${editId}/`, data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      if (editId === null) {
+        await api.post('/admin/sliders/', data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      } else {
+        await api.patch(`/admin/sliders/${editId}/`, data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      }
       fetchSliders();
       setIsModalOpen(false);
     } catch (err: any) {
-      alert(err.response?.data?.detail || 'Failed to update slider');
+      alert(err.response?.data?.detail || 'Failed to save slider');
     } finally {
       setSubmitting(false);
     }
@@ -130,11 +131,10 @@ export default function SlidersPage() {
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <label className="cursor-pointer inline-flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+          <button onClick={openAddModal} className="cursor-pointer inline-flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
             <Upload className="h-4 w-4" />
-            {uploading ? 'Uploading...' : 'Upload Image'}
-            <input type="file" className="hidden" accept="image/*" onChange={handleUpload} disabled={uploading} />
-          </label>
+            Add Slide
+          </button>
         </div>
       </div>
       
@@ -172,7 +172,7 @@ export default function SlidersPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">Edit Slider</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'Edit Slider' : 'Add New Slide'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <span className="text-xl">×</span>
               </button>
@@ -201,8 +201,8 @@ export default function SlidersPage() {
                 <input type="text" name="link" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.link} onChange={handleChange} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Replace Image (Optional)</label>
-                <input type="file" accept="image/*" className="mt-1 block w-full text-sm" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} />
+                <label className="block text-sm font-medium text-gray-700">{editId ? 'Replace Image (Optional)' : 'Image *'}</label>
+                <input type="file" accept="image/*" className="mt-1 block w-full text-sm" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} required={editId === null} />
               </div>
               <div className="flex items-center mt-4">
                 <input id="is_active" name="is_active" type="checkbox" className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" checked={formData.is_active} onChange={handleChange} />

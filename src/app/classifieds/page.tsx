@@ -57,7 +57,7 @@ export default function ClassifiedsPage() {
     } else if (activeTab === 'vehicles') {
       initialData = { ...initialData, type: 'CAR', make: '', model: '', year: 2020, condition: 'USED_GOOD', transmission: 'AUTOMATIC', fuel_type: 'PETROL', price: '', mileage: '', color: '' };
     } else if (activeTab === 'services') {
-      initialData = { ...initialData, category: 'Medical Services', service_type: '' };
+      initialData = { ...initialData, category_name: 'Medical Services', service_type: '' };
     }
     setFormData(initialData);
     setSelectedImage(null);
@@ -402,9 +402,14 @@ export default function ClassifiedsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Category</label>
-                      <select name="category" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.category || 'Medical Services'} onChange={handleChange} required>
+                      <select name="category_name" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.category_name || formData.category?.name || formData.category || 'Medical Services'} onChange={handleChange} required>
                         <option value="Specialist Doctor">Specialist Doctor</option>
+                        <option value="Hospital">Hospital</option>
+                        <option value="Ambulance">Ambulance</option>
+                        <option value="Police Station">Police Station</option>
+                        <option value="Embassy">Embassy</option>
                         <option value="Travel Agency">Travel Agency</option>
+                        <option value="Hotel">Hotel</option>
                         <option value="Maktab Sanad">Maktab Sanad</option>
                         <option value="Money Exchange">Money Exchange</option>
                         <option value="Lawyer">Lawyer</option>

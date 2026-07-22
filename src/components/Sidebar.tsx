@@ -56,8 +56,10 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         "fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col bg-gray-900 text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="flex h-16 shrink-0 items-center px-6">
-          <h1 className="text-xl font-bold tracking-tight text-white">Sheba Admin</h1>
+        <div className="flex h-20 shrink-0 items-center px-6 gap-3 border-b border-gray-800">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/main-logo.png" alt="Sheba Admin" className="h-14 w-auto object-contain bg-white/10 p-1.5 rounded-lg" />
+          <span className="text-xs font-semibold text-indigo-400 bg-indigo-950/60 px-2.5 py-1 rounded border border-indigo-800/50">Admin</span>
         </div>
       <nav className="flex flex-1 flex-col px-4 py-4 overflow-y-auto">
         <ul role="list" className="flex flex-1 flex-col gap-y-2">

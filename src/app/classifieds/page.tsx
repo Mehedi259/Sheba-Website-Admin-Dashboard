@@ -51,7 +51,7 @@ export default function ClassifiedsPage() {
   const handleOpenModal = () => {
     let initialData: any = { title: '', city: '', contact_phone: '', description: '', status: 'PUBLISHED' };
     if (activeTab === 'jobs') {
-      initialData = { ...initialData, type: 'FULL_TIME', company_name_en: '' };
+      initialData = { ...initialData, type: 'FULL_TIME', company_name_en: '', salary_min: '', salary_max: '', salary_currency: 'OMR' };
     } else if (activeTab === 'properties') {
       initialData = { ...initialData, type: 'RESIDENTIAL', category: 'HOUSE', purpose: 'RENT', price: '' };
     } else if (activeTab === 'vehicles') {
@@ -205,7 +205,12 @@ export default function ClassifiedsPage() {
                         {item.title}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {activeTab === 'jobs' && (item.type + ' | ' + (item.company?.name || 'Company'))}
+                        {activeTab === 'jobs' && (
+                          item.type + ' | ' + (item.company?.name || 'Company') + 
+                          (item.salary_min || item.salary_max 
+                            ? ` | Salary: ${item.salary_min || 0}-${item.salary_max || 'Max'} ${item.salary_currency || 'OMR'}`
+                            : item.price ? ` | ${item.price} OMR` : ' | Negotiable')
+                        )}
                         {activeTab === 'properties' && (item.type + ' | ' + item.category)}
                         {activeTab === 'vehicles' && (item.make + ' ' + item.model + ' (' + item.year + ')')}
                         {activeTab === 'services' && (item.category + ' | ' + item.service_type)}
@@ -281,11 +286,31 @@ export default function ClassifiedsPage() {
                         <option value="FULL_TIME">Full Time</option>
                         <option value="PART_TIME">Part Time</option>
                         <option value="CONTRACT">Contract</option>
+                        <option value="TEMPORARY">Temporary</option>
+                        <option value="INTERNSHIP">Internship</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Company Name (English)</label>
                       <input type="text" name="company_name_en" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.company_name_en || ''} onChange={handleChange} required />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Min Salary</label>
+                      <input type="number" name="salary_min" placeholder="e.g. 300" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.salary_min || ''} onChange={handleChange} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Max Salary</label>
+                      <input type="number" name="salary_max" placeholder="e.g. 500" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.salary_max || ''} onChange={handleChange} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Currency</label>
+                      <select name="salary_currency" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.salary_currency || 'OMR'} onChange={handleChange}>
+                        <option value="OMR">OMR</option>
+                        <option value="USD">USD</option>
+                        <option value="BDT">BDT</option>
+                      </select>
                     </div>
                   </div>
                 </>

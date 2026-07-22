@@ -38,7 +38,9 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-gray-50">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/main-logo.png" alt="Hello Oman Sheba" className="h-16 md:h-20 w-auto mx-auto object-contain drop-shadow-md" />
+        <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Sign in to Admin Dashboard
         </h2>
       </div>

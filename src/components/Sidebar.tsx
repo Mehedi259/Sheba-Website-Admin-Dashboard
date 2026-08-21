@@ -10,7 +10,8 @@ import {
   AlertTriangle, 
   Newspaper, 
   MessageSquare,
-  LogOut
+  LogOut,
+  ShoppingCart
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'Emergency', href: '/emergency', icon: AlertTriangle },
   { name: 'News', href: '/news', icon: Newspaper },
   { name: 'Community', href: '/community', icon: MessageSquare },
+  { name: 'Market', href: '/market', icon: ShoppingCart },
 ];
 
 interface SidebarProps {

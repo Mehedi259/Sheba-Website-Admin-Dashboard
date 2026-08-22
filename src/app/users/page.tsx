@@ -8,11 +8,30 @@ export default function UsersPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [nextUrl, setNextUrl] = useState<string | null>(null);
+  const [prevUrl, setPrevUrl] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (url: string = '/admin/users/') => {
+    setLoading(true);
     try {
-      const response = await api.get('/admin/users/');
-      setUsers(response.data.results || response.data);
+      // If the API returns a full absolute URL (e.g. from DRF pagination), 
+      // extract only the search query (?page=2) to prevent domain/protocol mismatch
+      let endpoint = url;
+      if (url.startsWith('http')) {
+        const urlObj = new URL(url);
+        endpoint = `/admin/users/${urlObj.search}`;
+      }
+
+      const response = await api.get(endpoint);
+      if (response.data && response.data.results) {
+        setUsers(response.data.results);
+        setNextUrl(response.data.next);
+        setPrevUrl(response.data.previous);
+        setTotalCount(response.data.count);
+      } else {
+        setUsers(response.data || []);
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to fetch users');
     } finally {
@@ -84,6 +103,30 @@ export default function UsersPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            <div className="flex items-center justify-between mt-6 px-4">
+              <div className="text-sm text-gray-700">
+                Total <span className="font-semibold">{totalCount}</span> users
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => fetchUsers(prevUrl!)}
+                  disabled={!prevUrl}
+                  className="px-4 py-2 border rounded-md text-sm font-medium text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => fetchUsers(nextUrl!)}
+                  disabled={!nextUrl}
+                  className="px-4 py-2 border rounded-md text-sm font-medium text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

@@ -100,9 +100,7 @@ export default function ClassifiedsPage() {
           imageFormData.append('content_id', response.data.id.toString());
           imageFormData.append('is_primary', 'true');
           
-          await api.post('/classifieds/images/', imageFormData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          });
+          await api.post('/classifieds/images/', imageFormData);
           
           // Re-fetch to get updated images if needed, or just let it be
           fetchData();

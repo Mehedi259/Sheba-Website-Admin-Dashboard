@@ -126,10 +126,10 @@ export default function ClassifiedsPage() {
   };
 
   const tabs = [
-    { id: 'jobs', name: 'Jobs' },
-    { id: 'properties', name: 'Properties' },
-    { id: 'vehicles', name: 'Vehicles' },
-    { id: 'services', name: 'Services' },
+    { id: 'jobs', name: 'চাকরি' },
+    { id: 'properties', name: 'প্রপার্টি' },
+    { id: 'vehicles', name: 'যানবাহন' },
+    { id: 'services', name: 'সার্ভিস' },
   ];
 
   return (
@@ -137,10 +137,10 @@ export default function ClassifiedsPage() {
       <div className="sm:flex sm:items-center mb-8">
         <div className="sm:flex-auto">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Classifieds
+            ক্লাসিফাইডস
           </h2>
           <p className="mt-2 text-sm text-gray-700">
-            Manage all classified ads posted by users.
+            ব্যবহারকারীদের পোস্ট করা সব ক্লাসিফাইডস পরিচালনা করুন।
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -150,7 +150,7 @@ export default function ClassifiedsPage() {
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 flex items-center gap-2 capitalize"
           >
             <Plus className="h-4 w-4" />
-            Add New {activeTab.slice(0, -1)}
+            নতুন যুক্ত করুন
           </button>
         </div>
       </div>
@@ -185,18 +185,18 @@ export default function ClassifiedsPage() {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Title</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Details</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">City</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">শিরোনাম</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">বিস্তারিত</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">শহর</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">স্ট্যাটাস</th>
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">অ্যাকশন</span></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {loading ? (
-                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">Loading {activeTab}...</td></tr>
+                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">লোড হচ্ছে...</td></tr>
                   ) : data.length === 0 ? (
-                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">No {activeTab} found.</td></tr>
+                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">কোন তথ্য পাওয়া যায়নি।</td></tr>
                   ) : data.map((item) => (
                     <tr key={item.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
@@ -220,7 +220,7 @@ export default function ClassifiedsPage() {
                         {item.status}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
-                        <button onClick={() => handleEdit(item)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">Edit</button>
+                        <button onClick={() => handleEdit(item)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">এডিট</button>
                         <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900 px-2 py-1 text-xs bg-red-50 rounded"><Trash2 className="h-4 w-4" /></button>
                       </td>
                     </tr>
@@ -237,7 +237,7 @@ export default function ClassifiedsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 my-8">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900 capitalize">Create New {activeTab.slice(0, -1)}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 capitalize">নতুন তৈরি করুন: {activeTab.slice(0, -1)}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-5 w-5" />
               </button>
@@ -246,26 +246,26 @@ export default function ClassifiedsPage() {
               {/* Common Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Title <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium text-gray-700">শিরোনাম <span className="text-red-500">*</span></label>
                   <input type="text" name="title" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.title || ''} onChange={handleChange} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">City <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium text-gray-700">শহর <span className="text-red-500">*</span></label>
                   <input type="text" name="city" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.city || ''} onChange={handleChange} required />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Contact Phone <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium text-gray-700">যোগাযোগের নম্বর <span className="text-red-500">*</span></label>
                   <input type="text" name="contact_phone" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.contact_phone || ''} onChange={handleChange} required />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Description <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium text-gray-700">বিস্তারিত <span className="text-red-500">*</span></label>
                 <textarea name="description" rows={3} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.description || ''} onChange={handleChange} required />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Image (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700">ছবি (ঐচ্ছিক)</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -295,15 +295,15 @@ export default function ClassifiedsPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Min Salary</label>
+                      <label className="block text-sm font-medium text-gray-700">সর্বনিম্ন বেতন</label>
                       <input type="number" name="salary_min" placeholder="e.g. 300" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.salary_min || ''} onChange={handleChange} />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Max Salary</label>
+                      <label className="block text-sm font-medium text-gray-700">সর্বোচ্চ বেতন</label>
                       <input type="number" name="salary_max" placeholder="e.g. 500" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.salary_max || ''} onChange={handleChange} />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Currency</label>
+                      <label className="block text-sm font-medium text-gray-700">মুদ্রা</label>
                       <select name="salary_currency" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.salary_currency || 'OMR'} onChange={handleChange}>
                         <option value="OMR">OMR</option>
                         <option value="USD">USD</option>
@@ -354,7 +354,7 @@ export default function ClassifiedsPage() {
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Type</label>
+                      <label className="block text-sm font-medium text-gray-700">ধরন</label>
                       <select name="type" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.type || 'CAR'} onChange={handleChange}>
                         <option value="CAR">Car</option>
                         <option value="MOTORCYCLE">Motorcycle</option>
@@ -362,21 +362,21 @@ export default function ClassifiedsPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Make (Brand)</label>
+                      <label className="block text-sm font-medium text-gray-700">ব্র্যান্ড</label>
                       <input type="text" name="make" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.make || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Model</label>
+                      <label className="block text-sm font-medium text-gray-700">মডেল</label>
                       <input type="text" name="model" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.model || ''} onChange={handleChange} required />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Year</label>
+                      <label className="block text-sm font-medium text-gray-700">বছর</label>
                       <input type="number" name="year" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.year || ''} onChange={handleChange} required />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Condition</label>
+                      <label className="block text-sm font-medium text-gray-700">অবস্থা</label>
                       <select name="condition" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.condition || 'USED_GOOD'} onChange={handleChange}>
                         <option value="NEW">New</option>
                         <option value="USED_LIKE_NEW">Used - Like New</option>
@@ -384,20 +384,20 @@ export default function ClassifiedsPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Price (OMR)</label>
+                      <label className="block text-sm font-medium text-gray-700">মূল্য (OMR)</label>
                       <input type="number" name="price" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.price || ''} onChange={handleChange} required />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Transmission</label>
+                      <label className="block text-sm font-medium text-gray-700">ট্রান্সমিশন</label>
                       <select name="transmission" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.transmission || 'AUTOMATIC'} onChange={handleChange}>
                         <option value="AUTOMATIC">Automatic</option>
                         <option value="MANUAL">Manual</option>
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Fuel Type</label>
+                      <label className="block text-sm font-medium text-gray-700">জ্বালানির ধরন</label>
                       <select name="fuel_type" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.fuel_type || 'PETROL'} onChange={handleChange}>
                         <option value="PETROL">Petrol</option>
                         <option value="DIESEL">Diesel</option>
@@ -406,13 +406,13 @@ export default function ClassifiedsPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Mileage (KM)</label>
+                      <label className="block text-sm font-medium text-gray-700">মাইলেজ (KM)</label>
                       <input type="number" name="mileage" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.mileage || ''} onChange={handleChange} />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Color</label>
+                      <label className="block text-sm font-medium text-gray-700">রং</label>
                       <input type="text" name="color" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.color || ''} onChange={handleChange} />
                     </div>
                   </div>
@@ -424,7 +424,7 @@ export default function ClassifiedsPage() {
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Category</label>
+                      <label className="block text-sm font-medium text-gray-700">ক্যাটাগরি</label>
                       <select name="category_name" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.category_name || formData.category?.name || formData.category || 'Medical Services'} onChange={handleChange} required>
                         <option value="Specialist Doctor">Specialist Doctor</option>
                         <option value="Hospital">Hospital</option>
@@ -446,7 +446,7 @@ export default function ClassifiedsPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Service Type</label>
+                      <label className="block text-sm font-medium text-gray-700">সার্ভিসের ধরন</label>
                       <input type="text" name="service_type" placeholder="e.g. Deep Cleaning" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.service_type || ''} onChange={handleChange} required />
                     </div>
                   </div>
@@ -459,14 +459,14 @@ export default function ClassifiedsPage() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                 >
-                  Cancel
+                  বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !formData.title}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px] capitalize"
                 >
-                  {submitting ? 'Saving...' : editId ? 'Save Changes' : `Create ${activeTab.slice(0, -1)}`}
+                  {submitting ? 'সেভ হচ্ছে...' : editId ? 'সেভ করুন' : `নতুন ${activeTab.slice(0, -1)}`}
                 </button>
               </div>
             </form>

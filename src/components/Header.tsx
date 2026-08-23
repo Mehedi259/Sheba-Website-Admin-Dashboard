@@ -30,7 +30,7 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
             </div>
             <span className="hidden lg:flex lg:items-center">
               <span className="ml-2 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
-                Admin User
+                অ্যাডমিন
               </span>
             </span>
           </div>

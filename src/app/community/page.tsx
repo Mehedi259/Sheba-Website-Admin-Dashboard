@@ -97,10 +97,10 @@ export default function CommunityPage() {
       <div className="sm:flex sm:items-center mb-8">
         <div className="sm:flex-auto">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-35 sm:tracking-tight">
-            Community Posts
+            কমিউনিটি পোস্ট
           </h2>
           <p className="mt-2 text-sm text-gray-700">
-            Manage community forum posts and discussions.
+            কমিউনিটি ফোরাম পোস্ট এবং আলোচনা পরিচালনা করুন।
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -110,7 +110,7 @@ export default function CommunityPage() {
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add New Post
+            নতুন পোস্ট যুক্ত করুন
           </button>
         </div>
       </div>
@@ -124,21 +124,21 @@ export default function CommunityPage() {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Content</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Author</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Likes</th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">কনটেন্ট</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">লেখক</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">লাইক</th>
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">অ্যাকশন</span></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {loading ? (
-                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">Loading posts...</td></tr>
+                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">পোস্ট লোড হচ্ছে...</td></tr>
                   ) : posts.length === 0 ? (
-                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">No posts found.</td></tr>
+                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">কোনো পোস্ট পাওয়া যায়নি।</td></tr>
                   ) : posts.map((post) => (
                     <tr key={post.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {post.content ? (post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content) : 'No content'}
+                        {post.content ? (post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content) : 'কোন কনটেন্ট নেই'}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {post.user_name || ''}
@@ -147,7 +147,7 @@ export default function CommunityPage() {
                         {post.likes_count || 0}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
-                        <button onClick={() => handleEdit(post)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">Edit</button>
+                        <button onClick={() => handleEdit(post)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">এডিট</button>
                         <button onClick={() => handleDelete(post.id)} className="text-red-600 hover:text-red-900 px-2 py-1 text-xs bg-red-50 rounded"><Trash2 className="h-4 w-4" /></button>
                       </td>
                     </tr>
@@ -164,25 +164,25 @@ export default function CommunityPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'Edit Post' : 'Create New Post'}</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'পোস্ট এডিট করুন' : 'নতুন পোস্ট তৈরি করুন'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <form onSubmit={handleSavePost} className="p-4 space-y-4">
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Content</label>
+                <label className="block text-sm font-medium text-gray-700">কনটেন্ট</label>
                 <textarea
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
                   rows={4}
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
-                  placeholder="What's on your mind?"
+                  placeholder="আপনি কি ভাবছেন?"
                   required
                 />
               </div>
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700">Image (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700">ছবি (ঐচ্ছিক)</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -196,14 +196,14 @@ export default function CommunityPage() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                 >
-                  Cancel
+                  বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !newContent.trim()}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px]"
                 >
-                  {submitting ? 'Saving...' : editId ? 'Save Changes' : 'Create Post'}
+                  {submitting ? 'সেভ হচ্ছে...' : editId ? 'সেভ করুন' : 'পোস্ট তৈরি করুন'}
                 </button>
               </div>
             </form>

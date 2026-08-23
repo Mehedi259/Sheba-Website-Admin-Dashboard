@@ -41,7 +41,7 @@ export default function LoginPage() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/main-logo.png" alt="Hello Oman Sheba" className="h-16 md:h-20 w-auto mx-auto object-contain drop-shadow-md" />
         <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to Admin Dashboard
+          অ্যাডমিন ড্যাশবোর্ডে সাইন ইন করুন
         </h2>
       </div>
 
@@ -55,7 +55,7 @@ export default function LoginPage() {
           
           <div>
             <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
-              Username
+              ইউজারনেম
             </label>
             <div className="mt-2">
               <input
@@ -74,7 +74,7 @@ export default function LoginPage() {
           <div>
             <div className="flex items-center justify-between">
               <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
-                Password
+                পাসওয়ার্ড
               </label>
             </div>
             <div className="mt-2">
@@ -97,7 +97,7 @@ export default function LoginPage() {
               disabled={loading}
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'সাইন ইন হচ্ছে...' : 'সাইন ইন'}
             </button>
           </div>
         </form>

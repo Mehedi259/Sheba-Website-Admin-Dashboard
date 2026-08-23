@@ -92,10 +92,10 @@ export default function EmergencyPage() {
       <div className="sm:flex sm:items-center mb-8">
         <div className="sm:flex-auto">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Emergency Services
+            জরুরী পরিষেবা
           </h2>
           <p className="mt-2 text-sm text-gray-700">
-            Manage emergency service providers (Ambulance, Fire, Police, etc.)
+            জরুরী পরিষেবা প্রদানকারীদের (অ্যাম্বুলেন্স, ফায়ার সার্ভিস, পুলিশ ইত্যাদি) পরিচালনা করুন
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -105,7 +105,7 @@ export default function EmergencyPage() {
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add New Service
+            নতুন পরিষেবা যুক্ত করুন
           </button>
         </div>
       </div>
@@ -119,18 +119,18 @@ export default function EmergencyPage() {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Name</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Type</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Phone</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">24/7</th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">নাম</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">ধরন</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">নম্বর</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">২৪/৭</th>
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">অ্যাকশন</span></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {loading ? (
-                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">Loading services...</td></tr>
+                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">পরিষেবা লোড হচ্ছে...</td></tr>
                   ) : services.length === 0 ? (
-                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">No emergency services found.</td></tr>
+                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">কোন জরুরী পরিষেবা পাওয়া যায়নি।</td></tr>
                   ) : services.map((service) => (
                     <tr key={service.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
@@ -139,10 +139,10 @@ export default function EmergencyPage() {
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">{service.service_type?.replace('_', ' ')}</td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{service.phone_number}</td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {service.is_24_7 ? <span className="text-green-600">Yes</span> : <span className="text-gray-400">No</span>}
+                        {service.is_24_7 ? <span className="text-green-600">হ্যাঁ</span> : <span className="text-gray-400">না</span>}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
-                        <button onClick={() => handleEdit(service)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">Edit</button>
+                        <button onClick={() => handleEdit(service)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">এডিট</button>
                         <button onClick={() => handleDelete(service.id)} className="text-red-600 hover:text-red-900 px-2 py-1 text-xs bg-red-50 rounded"><Trash2 className="h-4 w-4" /></button>
                       </td>
                     </tr>
@@ -159,14 +159,14 @@ export default function EmergencyPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'Edit Emergency Service' : 'Create Emergency Service'}</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'জরুরী পরিষেবা এডিট করুন' : 'জরুরী পরিষেবা তৈরি করুন'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <form onSubmit={handleSave} className="p-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Service Name</label>
+                <label className="block text-sm font-medium text-gray-700">পরিষেবার নাম</label>
                 <input
                   type="text"
                   name="name"
@@ -179,7 +179,7 @@ export default function EmergencyPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700">Service Type</label>
+                <label className="block text-sm font-medium text-gray-700">পরিষেবার ধরন</label>
                 <select
                   name="service_type"
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
@@ -196,7 +196,7 @@ export default function EmergencyPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                <label className="block text-sm font-medium text-gray-700">নম্বর</label>
                 <input
                   type="text"
                   name="phone_number"
@@ -209,7 +209,7 @@ export default function EmergencyPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Address</label>
+                <label className="block text-sm font-medium text-gray-700">ঠিকানা</label>
                 <input
                   type="text"
                   name="address"
@@ -222,7 +222,7 @@ export default function EmergencyPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Location</label>
+                <label className="block text-sm font-medium text-gray-700">লোকেশন</label>
                 <input
                   type="text"
                   name="location"
@@ -244,7 +244,7 @@ export default function EmergencyPage() {
                   onChange={handleChange}
                 />
                 <label htmlFor="is_24_7" className="ml-2 block text-sm text-gray-900">
-                  Available 24/7
+                  ২৪/৭ উপলব্ধ
                 </label>
               </div>
 
@@ -254,14 +254,14 @@ export default function EmergencyPage() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                 >
-                  Cancel
+                  বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !formData.name || !formData.phone_number}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px]"
                 >
-                  {submitting ? 'Saving...' : editId ? 'Save Changes' : 'Create'}
+                  {submitting ? 'সেভ হচ্ছে...' : editId ? 'সেভ করুন' : 'তৈরি করুন'}
                 </button>
               </div>
             </form>

@@ -17,14 +17,14 @@ import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Users', href: '/users', icon: Users },
-  { name: 'Sliders', href: '/sliders', icon: ImageIcon },
-  { name: 'Classifieds', href: '/classifieds', icon: Briefcase },
-  { name: 'Emergency', href: '/emergency', icon: AlertTriangle },
-  { name: 'News', href: '/news', icon: Newspaper },
-  { name: 'Community', href: '/community', icon: MessageSquare },
-  { name: 'Market', href: '/market', icon: ShoppingCart },
+  { name: 'ড্যাশবোর্ড', href: '/', icon: LayoutDashboard },
+  { name: 'ব্যবহারকারী', href: '/users', icon: Users },
+  { name: 'স্লাইডার', href: '/sliders', icon: ImageIcon },
+  { name: 'ক্লাসিফাইডস', href: '/classifieds', icon: Briefcase },
+  { name: 'জরুরী অবস্থা', href: '/emergency', icon: AlertTriangle },
+  { name: 'সংবাদ', href: '/news', icon: Newspaper },
+  { name: 'কমিউনিটি', href: '/community', icon: MessageSquare },
+  { name: 'মার্কেট', href: '/market', icon: ShoppingCart },
 ];
 
 interface SidebarProps {
@@ -61,7 +61,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         <div className="flex h-20 shrink-0 items-center px-6 gap-3 border-b border-gray-800">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/main-logo.png" alt="Sheba Admin" className="h-14 w-auto object-contain bg-white/10 p-1.5 rounded-lg" />
-          <span className="text-xs font-semibold text-indigo-400 bg-indigo-950/60 px-2.5 py-1 rounded border border-indigo-800/50">Admin</span>
+          <span className="text-xs font-semibold text-indigo-400 bg-indigo-950/60 px-2.5 py-1 rounded border border-indigo-800/50">অ্যাডমিন</span>
         </div>
       <nav className="flex flex-1 flex-col px-4 py-4 overflow-y-auto">
         <ul role="list" className="flex flex-1 flex-col gap-y-2">
@@ -100,7 +100,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               className="group -mx-2 flex w-full gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
             >
               <LogOut className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-white" />
-              Logout
+              লগআউট
             </button>
           </li>
         </ul>

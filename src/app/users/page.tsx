@@ -58,10 +58,10 @@ export default function UsersPage() {
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Users
+            ব্যবহারকারী
           </h2>
           <p className="mt-2 text-sm text-gray-700">
-            A list of all the users in your platform including their name, email, and status.
+            আপনার প্ল্যাটফর্মের সব ব্যবহারকারীর নাম, ইমেইল এবং স্ট্যাটাস সহ তালিকা।
           </p>
         </div>
       </div>
@@ -75,15 +75,15 @@ export default function UsersPage() {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">User</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Joined</th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">ব্যবহারকারী</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">ইমেইল</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">যোগদান করেছেন</th>
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">অ্যাকশন</span></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {loading ? (
-                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">Loading users...</td></tr>
+                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">ব্যবহারকারী লোড হচ্ছে...</td></tr>
                   ) : users.map((user) => (
                     <tr key={user.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
@@ -107,7 +107,7 @@ export default function UsersPage() {
             {/* Pagination Controls */}
             <div className="flex items-center justify-between mt-6 px-4">
               <div className="text-sm text-gray-700">
-                Total <span className="font-semibold">{totalCount}</span> users
+                মোট <span className="font-semibold">{totalCount}</span> জন ব্যবহারকারী
               </div>
               <div className="flex gap-2">
                 <button
@@ -115,14 +115,14 @@ export default function UsersPage() {
                   disabled={!prevUrl}
                   className="px-4 py-2 border rounded-md text-sm font-medium text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  Previous
+                  পূর্ববর্তী
                 </button>
                 <button
                   onClick={() => fetchUsers(nextUrl!)}
                   disabled={!nextUrl}
                   className="px-4 py-2 border rounded-md text-sm font-medium text-gray-700 bg-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  Next
+                  পরবর্তী
                 </button>
               </div>
             </div>

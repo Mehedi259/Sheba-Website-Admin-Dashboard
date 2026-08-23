@@ -106,10 +106,10 @@ export default function NewsPage() {
       <div className="sm:flex sm:items-center mb-8">
         <div className="sm:flex-auto">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            News Articles
+            খবর এবং ব্লগ
           </h2>
           <p className="mt-2 text-sm text-gray-700">
-            Manage news and blog articles.
+            খবর এবং ব্লগ আর্টিকেল পরিচালনা করুন।
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -119,7 +119,7 @@ export default function NewsPage() {
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add New Article
+            নতুন আর্টিকেল যুক্ত করুন
           </button>
         </div>
       </div>
@@ -133,18 +133,18 @@ export default function NewsPage() {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Title</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Type</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Views</th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">শিরোনাম</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">ধরন</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">স্ট্যাটাস</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">ভিউ</th>
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">অ্যাকশন</span></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {loading ? (
-                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">Loading articles...</td></tr>
+                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">আর্টিকেল লোড হচ্ছে...</td></tr>
                   ) : articles.length === 0 ? (
-                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">No articles found.</td></tr>
+                    <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">কোনো আর্টিকেল পাওয়া যায়নি।</td></tr>
                   ) : articles.map((article) => (
                     <tr key={article.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
@@ -153,14 +153,14 @@ export default function NewsPage() {
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">{article.type?.toLowerCase()}</td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {article.status === 'PUBLISHED' ? (
-                          <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Published</span>
+                          <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">প্রকাশিত</span>
                         ) : (
-                          <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">{article.status}</span>
+                          <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">খসড়া</span>
                         )}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{article.views}</td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
-                        <button onClick={() => handleEdit(article)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">Edit</button>
+                        <button onClick={() => handleEdit(article)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">এডিট</button>
                         <button onClick={() => handleDelete(article.id)} className="text-red-600 hover:text-red-900 px-2 py-1 text-xs bg-red-50 rounded"><Trash2 className="h-4 w-4" /></button>
                       </td>
                     </tr>
@@ -177,14 +177,14 @@ export default function NewsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'Edit Article' : 'Create Article'}</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'আর্টিকেল এডিট করুন' : 'আর্টিকেল তৈরি করুন'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <form onSubmit={handleSave} className="p-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <label className="block text-sm font-medium text-gray-700">শিরোনাম</label>
                 <input
                   type="text"
                   name="title"
@@ -196,7 +196,7 @@ export default function NewsPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700">Type</label>
+                <label className="block text-sm font-medium text-gray-700">ধরন</label>
                 <select
                   name="type"
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
@@ -210,7 +210,7 @@ export default function NewsPage() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <label className="block text-sm font-medium text-gray-700">স্ট্যাটাস</label>
                 <select
                   name="status"
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
@@ -222,7 +222,7 @@ export default function NewsPage() {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Featured Image (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700">মূল্য ছবি (ঐচ্ছিক)</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -232,7 +232,7 @@ export default function NewsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Content</label>
+                <label className="block text-sm font-medium text-gray-700">বিস্তারিত</label>
                 <textarea
                   name="content"
                   rows={6}
@@ -249,14 +249,14 @@ export default function NewsPage() {
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                 >
-                  Cancel
+                  বাতিল
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !formData.title || !formData.content}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px]"
                 >
-                  {submitting ? 'Saving...' : editId ? 'Save Changes' : 'Create Article'}
+                  {submitting ? 'সেভ হচ্ছে...' : editId ? 'সেভ করুন' : 'তৈরি করুন'}
                 </button>
               </div>
             </form>

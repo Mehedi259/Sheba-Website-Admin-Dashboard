@@ -33,33 +33,33 @@ export default function Dashboard() {
 
   const statCards = [
     { 
-      title: 'CLASSIFIEDS', 
+      title: 'ক্লাসিফাইডস', 
       value: stats.total_classifieds, 
-      subtext: 'Total listings', 
+      subtext: 'সর্বমোট লিস্টিং', 
       icon: Briefcase, 
       gradient: 'bg-gradient-to-br from-pink-400 to-rose-500',
       href: '/classifieds'
     },
     { 
-      title: 'NEWS', 
+      title: 'সংবাদ', 
       value: stats.news_count, 
-      subtext: 'Articles', 
+      subtext: 'আর্টিকেল', 
       icon: Newspaper, 
       gradient: 'bg-gradient-to-br from-cyan-400 to-blue-500',
       href: '/news'
     },
     { 
-      title: 'POSTS', 
+      title: 'পোস্ট', 
       value: stats.post_count, 
-      subtext: 'Community', 
+      subtext: 'কমিউনিটি', 
       icon: MessageSquare, 
       gradient: 'bg-gradient-to-br from-emerald-400 to-teal-400',
       href: '/community'
     },
     { 
-      title: 'USERS', 
+      title: 'ব্যবহারকারী', 
       value: stats.user_count, 
-      subtext: 'Registered', 
+      subtext: 'নিবন্ধিত', 
       icon: Users, 
       gradient: 'bg-gradient-to-br from-indigo-500 to-purple-600',
       href: '/users'
@@ -67,25 +67,25 @@ export default function Dashboard() {
   ];
 
   const barData = [
-    { name: 'Jobs', value: stats.job_count, fill: '#818cf8' }, // indigo-400
-    { name: 'Properties', value: stats.property_count, fill: '#f472b6' }, // pink-400
-    { name: 'Vehicles', value: stats.vehicle_count, fill: '#7dd3fc' }, // sky-300
-    { name: 'Services', value: stats.service_count, fill: '#6ee7b7' }, // emerald-300
-    { name: 'News', value: stats.news_count, fill: '#94a3b8' }, // slate-400
-    { name: 'Posts', value: stats.post_count, fill: '#a78bfa' }, // purple-400
+    { name: 'চাকরি', value: stats.job_count, fill: '#818cf8' }, // indigo-400
+    { name: 'প্রপার্টি', value: stats.property_count, fill: '#f472b6' }, // pink-400
+    { name: 'যানবাহন', value: stats.vehicle_count, fill: '#7dd3fc' }, // sky-300
+    { name: 'সার্ভিস', value: stats.service_count, fill: '#6ee7b7' }, // emerald-300
+    { name: 'সংবাদ', value: stats.news_count, fill: '#94a3b8' }, // slate-400
+    { name: 'পোস্ট', value: stats.post_count, fill: '#a78bfa' }, // purple-400
   ];
 
   const donutData = [
-    { name: 'Jobs', value: stats.job_count, fill: '#818cf8' },
-    { name: 'Properties', value: stats.property_count, fill: '#f472b6' },
-    { name: 'Vehicles', value: stats.vehicle_count, fill: '#7dd3fc' },
-    { name: 'Services', value: stats.service_count, fill: '#6ee7b7' },
+    { name: 'চাকরি', value: stats.job_count, fill: '#818cf8' },
+    { name: 'প্রপার্টি', value: stats.property_count, fill: '#f472b6' },
+    { name: 'যানবাহন', value: stats.vehicle_count, fill: '#7dd3fc' },
+    { name: 'সার্ভিস', value: stats.service_count, fill: '#6ee7b7' },
   ];
 
   return (
     <div className="max-w-7xl mx-auto">
       <h2 className="text-2xl font-bold leading-7 text-gray-800 sm:truncate sm:text-3xl sm:tracking-tight mb-6">
-        Site administration
+        সাইট অ্যাডমিনিস্ট্রেশন
       </h2>
 
       {/* 4 Cards Grid */}
@@ -112,7 +112,7 @@ export default function Dashboard() {
         <div className="rounded-xl bg-white p-6 shadow-sm border border-gray-100">
           <div className="flex items-center gap-2 mb-6">
             <BarChart3 className="h-5 w-5 text-gray-500" />
-            <h3 className="text-lg font-semibold text-gray-800">Content Overview</h3>
+            <h3 className="text-lg font-semibold text-gray-800">কনটেন্ট ওভারভিউ</h3>
           </div>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -138,7 +138,7 @@ export default function Dashboard() {
         <div className="rounded-xl bg-white p-6 shadow-sm border border-gray-100">
           <div className="flex items-center gap-2 mb-6">
             <PieChartIcon className="h-5 w-5 text-orange-400" />
-            <h3 className="text-lg font-semibold text-gray-800">Classifieds Breakdown</h3>
+            <h3 className="text-lg font-semibold text-gray-800">ক্লাসিফাইডস ব্রেকডাউন</h3>
           </div>
           <div className="h-72 w-full flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">

@@ -99,10 +99,10 @@ export default function MarketPage() {
       <div className="sm:flex sm:items-center mb-8">
         <div className="sm:flex-auto">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Marketplace
+            মার্কেটপ্লেস
           </h2>
           <p className="mt-2 text-sm text-gray-700">
-            Manage all marketplace items (sell posts) posted by users.
+            ব্যবহারকারীদের পোস্ট করা সব মার্কেটপ্লেস আইটেম (বিক্রয় পোস্ট) পরিচালনা করুন।
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -112,7 +112,7 @@ export default function MarketPage() {
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add New Item
+            নতুন আইটেম যুক্ত করুন
           </button>
         </div>
       </div>
@@ -126,19 +126,19 @@ export default function MarketPage() {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Title</th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Category</th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Price</th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">City</th>
-                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
-                    <th className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">Actions</span></th>
+                    <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">শিরোনাম</th>
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">ক্যাটাগরি</th>
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">মূল্য</th>
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">শহর</th>
+                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">স্ট্যাটাস</th>
+                    <th className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">অ্যাকশন</span></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {loading ? (
-                    <tr><td colSpan={6} className="py-10 text-center text-sm text-gray-500">Loading Market Items...</td></tr>
+                    <tr><td colSpan={6} className="py-10 text-center text-sm text-gray-500">মার্কেট আইটেম লোড হচ্ছে...</td></tr>
                   ) : data.length === 0 ? (
-                    <tr><td colSpan={6} className="py-10 text-center text-sm text-gray-500">No Market Items found.</td></tr>
+                    <tr><td colSpan={6} className="py-10 text-center text-sm text-gray-500">কোন মার্কেট আইটেম পাওয়া যায়নি।</td></tr>
                   ) : data.map((item) => (
                     <tr key={item.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900">{item.title}</td>
@@ -147,7 +147,7 @@ export default function MarketPage() {
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{item.city}</td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{item.status}</td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
-                        <button onClick={() => handleEdit(item)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">Edit</button>
+                        <button onClick={() => handleEdit(item)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">এডিট</button>
                         <button onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-900 px-2 py-1 text-xs bg-red-50 rounded"><Trash2 className="h-4 w-4" /></button>
                       </td>
                     </tr>
@@ -163,17 +163,17 @@ export default function MarketPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 my-8 p-6">
             <div className="flex justify-between items-center mb-4 border-b pb-2">
-              <h3 className="text-lg font-semibold">{editId ? 'Edit Item' : 'Create New Item'}</h3>
+              <h3 className="text-lg font-semibold">{editId ? 'আইটেম এডিট করুন' : 'নতুন আইটেম তৈরি করুন'}</h3>
               <button onClick={() => setIsModalOpen(false)}><X className="h-5 w-5 text-gray-500" /></button>
             </div>
             <form onSubmit={handleSave} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Title *</label>
+                  <label className="block text-sm font-medium text-gray-700">শিরোনাম *</label>
                   <input type="text" name="title" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900" value={formData.title || ''} onChange={handleChange} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Category *</label>
+                  <label className="block text-sm font-medium text-gray-700">ক্যাটাগরি *</label>
                   <select name="category" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900" value={formData.category || 'electronics'} onChange={handleChange} required>
                     <option value="electronics">Electronics</option>
                     <option value="furniture">Furniture</option>
@@ -184,11 +184,11 @@ export default function MarketPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Price *</label>
+                  <label className="block text-sm font-medium text-gray-700">মূল্য *</label>
                   <input type="number" name="price" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900" value={formData.price || ''} onChange={handleChange} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Condition *</label>
+                  <label className="block text-sm font-medium text-gray-700">অবস্থা *</label>
                   <select name="condition" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900" value={formData.condition || 'GOOD'} onChange={handleChange} required>
                     <option value="NEW">New</option>
                     <option value="LIKE_NEW">Like New</option>
@@ -200,11 +200,11 @@ export default function MarketPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">City *</label>
+                  <label className="block text-sm font-medium text-gray-700">শহর *</label>
                   <input type="text" name="city" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900" value={formData.city || ''} onChange={handleChange} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Status *</label>
+                  <label className="block text-sm font-medium text-gray-700">স্ট্যাটাস *</label>
                   <select name="status" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900" value={formData.status || 'PUBLISHED'} onChange={handleChange} required>
                     <option value="DRAFT">Draft</option>
                     <option value="PUBLISHED">Published</option>
@@ -216,21 +216,21 @@ export default function MarketPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Contact Name *</label>
+                  <label className="block text-sm font-medium text-gray-700">যোগাযোগের নাম *</label>
                   <input type="text" name="contact_name" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900" value={formData.contact_name || ''} onChange={handleChange} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Contact Phone *</label>
+                  <label className="block text-sm font-medium text-gray-700">যোগাযোগের নম্বর *</label>
                   <input type="text" name="contact_phone" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900" value={formData.contact_phone || ''} onChange={handleChange} required />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Description *</label>
+                <label className="block text-sm font-medium text-gray-700">বিস্তারিত *</label>
                 <textarea name="description" rows={3} className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900" value={formData.description || ''} onChange={handleChange} required />
               </div>
               <div className="flex justify-end gap-3 pt-4">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-md">Cancel</button>
-                <button type="submit" disabled={submitting} className="px-4 py-2 bg-indigo-600 text-white rounded-md">{submitting ? 'Saving...' : 'Save'}</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-md">বাতিল</button>
+                <button type="submit" disabled={submitting} className="px-4 py-2 bg-indigo-600 text-white rounded-md">{submitting ? 'সেভ হচ্ছে...' : 'সেভ করুন'}</button>
               </div>
             </form>
           </div>

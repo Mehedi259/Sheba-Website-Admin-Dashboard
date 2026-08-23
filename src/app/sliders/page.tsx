@@ -124,16 +124,16 @@ export default function SlidersPage() {
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Hero Sliders
+            হিরো স্লাইডার
           </h2>
           <p className="mt-2 text-sm text-gray-700">
-            Manage the homepage hero slider images.
+            হোমপেজের হিরো স্লাইডার ছবিগুলো পরিচালনা করুন।
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button onClick={openAddModal} className="cursor-pointer inline-flex items-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
             <Upload className="h-4 w-4" />
-            Add Slide
+            স্লাইড যুক্ত করুন
           </button>
         </div>
       </div>
@@ -142,9 +142,9 @@ export default function SlidersPage() {
 
       <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
         {loading ? (
-          <div className="col-span-full text-center py-10 text-gray-500">Loading sliders...</div>
+          <div className="col-span-full text-center py-10 text-gray-500">স্লাইডার লোড হচ্ছে...</div>
         ) : sliders.length === 0 ? (
-          <div className="col-span-full text-center py-10 text-gray-500 bg-white border rounded shadow-sm">No sliders found.</div>
+          <div className="col-span-full text-center py-10 text-gray-500 bg-white border rounded shadow-sm">কোনো স্লাইডার পাওয়া যায়নি।</div>
         ) : (
           sliders.map((slider) => (
             <div key={slider.id} className="relative group bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
@@ -155,7 +155,7 @@ export default function SlidersPage() {
                 <span className="text-sm font-medium text-gray-900 truncate">{slider.title}</span>
                 <div className="flex gap-2">
                   <button onClick={() => openEditModal(slider)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">
-                    Edit
+                    এডিট
                   </button>
                   <button onClick={() => handleDelete(slider.id)} className="text-red-500 hover:text-red-700 p-1">
                     <Trash2 className="h-4 w-4" />
@@ -172,46 +172,46 @@ export default function SlidersPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'Edit Slider' : 'Add New Slide'}</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{editId ? 'স্লাইডার এডিট করুন' : 'নতুন স্লাইড যুক্ত করুন'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <span className="text-xl">×</span>
               </button>
             </div>
             <form onSubmit={handleSave} className="p-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <label className="block text-sm font-medium text-gray-700">শিরোনাম</label>
                 <input type="text" name="title" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.title} onChange={handleChange} required />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Subtitle</label>
+                <label className="block text-sm font-medium text-gray-700">সাবটাইটেল</label>
                 <input type="text" name="subtitle" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.subtitle} onChange={handleChange} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">CTA Text</label>
+                  <label className="block text-sm font-medium text-gray-700">কল টু অ্যাকশন (CTA) টেক্সট</label>
                   <input type="text" name="cta_text" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.cta_text} onChange={handleChange} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Order</label>
+                  <label className="block text-sm font-medium text-gray-700">ক্রম</label>
                   <input type="number" name="order" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.order} onChange={handleChange} />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Link URL</label>
+                <label className="block text-sm font-medium text-gray-700">লিঙ্ক (URL)</label>
                 <input type="text" name="link" className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none text-gray-900" value={formData.link} onChange={handleChange} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">{editId ? 'Replace Image (Optional)' : 'Image *'}</label>
+                <label className="block text-sm font-medium text-gray-700">{editId ? 'ছবি পরিবর্তন করুন (ঐচ্ছিক)' : 'ছবি *'}</label>
                 <input type="file" accept="image/*" className="mt-1 block w-full text-sm" onChange={(e) => setSelectedImage(e.target.files?.[0] || null)} required={editId === null} />
               </div>
               <div className="flex items-center mt-4">
                 <input id="is_active" name="is_active" type="checkbox" className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" checked={formData.is_active} onChange={handleChange} />
-                <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">Active</label>
+                <label htmlFor="is_active" className="ml-2 block text-sm text-gray-900">সক্রিয়</label>
               </div>
               <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">Cancel</button>
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">বাতিল</button>
                 <button type="submit" disabled={submitting} className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 min-w-[80px]">
-                  {submitting ? 'Saving...' : 'Save Changes'}
+                  {submitting ? 'সেভ হচ্ছে...' : 'সেভ করুন'}
                 </button>
               </div>
             </form>

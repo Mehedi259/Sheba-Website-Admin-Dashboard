@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sheba Admin Dashboard",
-  description: "Admin dashboard for Sheba website",
+  title: "সেবা অ্যাডমিন ড্যাশবোর্ড",
+  description: "সেবা ওয়েবসাইটের অ্যাডমিন ড্যাশবোর্ড",
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="bn"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased bg-gray-50`}
     >
       <body className="h-full">

@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react';
 import { Trash2, Plus, X } from 'lucide-react';
 import api from '@/lib/api';
 
-export default function ClassifiedsPage() {
-  const [activeTab, setActiveTab] = useState<'jobs' | 'properties' | 'vehicles' | 'services'>('jobs');
+export default function ClassifiedsView({ type, title }: { type: 'jobs' | 'properties' | 'vehicles' | 'services', title: string }) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -23,10 +22,10 @@ export default function ClassifiedsPage() {
     setLoading(true);
     setError('');
     try {
-      const response = await api.get(`/admin/${activeTab}/`);
+      const response = await api.get(`/admin/${type}/`);
       setData(response.data.results || response.data);
     } catch (err: any) {
-      setError(err.message || `Failed to fetch ${activeTab}`);
+      setError(err.message || `Failed to fetch ${type}`);
     } finally {
       setLoading(false);
     }
@@ -36,12 +35,12 @@ export default function ClassifiedsPage() {
     fetchData();
     // Reset form when tab changes
     setFormData({});
-  }, [activeTab]);
+  }, [type]);
 
   const handleDelete = async (id: number) => {
     if (!window.confirm(`Delete this item?`)) return;
     try {
-      await api.delete(`/admin/${activeTab}/${id}/`);
+      await api.delete(`/admin/${type}/${id}/`);
       setData(data.filter(item => item.id !== id));
     } catch (err: any) {
       alert('Failed to delete');
@@ -50,13 +49,13 @@ export default function ClassifiedsPage() {
 
   const handleOpenModal = () => {
     let initialData: any = { title: '', city: '', contact_phone: '', description: '', status: 'PUBLISHED' };
-    if (activeTab === 'jobs') {
+    if (type === 'jobs') {
       initialData = { ...initialData, type: 'FULL_TIME', company_name_en: '', salary_min: '', salary_max: '', salary_currency: 'OMR' };
-    } else if (activeTab === 'properties') {
+    } else if (type === 'properties') {
       initialData = { ...initialData, type: 'RESIDENTIAL', category: 'HOUSE', purpose: 'RENT', price: '' };
-    } else if (activeTab === 'vehicles') {
+    } else if (type === 'vehicles') {
       initialData = { ...initialData, type: 'CAR', make: '', model: '', year: 2020, condition: 'USED_GOOD', transmission: 'AUTOMATIC', fuel_type: 'PETROL', price: '', mileage: '', color: '' };
-    } else if (activeTab === 'services') {
+    } else if (type === 'services') {
       initialData = { ...initialData, category_name: 'Medical Services', service_type: '' };
     }
     setFormData(initialData);
@@ -78,10 +77,10 @@ export default function ClassifiedsPage() {
     try {
       let response: any;
       if (editId) {
-        response = await api.put(`/admin/${activeTab}/${editId}/`, formData);
+        response = await api.put(`/admin/${type}/${editId}/`, formData);
         setData(data.map(item => item.id === editId ? response.data : item));
       } else {
-        response = await api.post(`/admin/${activeTab}/`, formData);
+        response = await api.post(`/admin/${type}/`, formData);
         setData([response.data, ...data]);
       }
       
@@ -91,10 +90,10 @@ export default function ClassifiedsPage() {
           const imageFormData = new FormData();
           imageFormData.append('image', selectedImage);
           let contentType = '';
-          if (activeTab === 'jobs') contentType = 'job';
-          if (activeTab === 'properties') contentType = 'property';
-          if (activeTab === 'vehicles') contentType = 'vehicle';
-          if (activeTab === 'services') contentType = 'service';
+          if (type === 'jobs') contentType = 'job';
+          if (type === 'properties') contentType = 'property';
+          if (type === 'vehicles') contentType = 'vehicle';
+          if (type === 'services') contentType = 'service';
           
           imageFormData.append('content_type', contentType);
           imageFormData.append('content_id', response.data.id.toString());
@@ -114,7 +113,7 @@ export default function ClassifiedsPage() {
       setSelectedImage(null);
       setEditId(null);
     } catch (err: any) {
-      alert(err.response?.data?.detail || `Failed to create ${activeTab.slice(0, -1)}`);
+      alert(err.response?.data?.detail || `Failed to create ${type.slice(0, -1)}`);
       console.error(err.response?.data);
     } finally {
       setSubmitting(false);
@@ -125,22 +124,15 @@ export default function ClassifiedsPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const tabs = [
-    { id: 'jobs', name: 'চাকরি' },
-    { id: 'properties', name: 'প্রপার্টি' },
-    { id: 'vehicles', name: 'যানবাহন' },
-    { id: 'services', name: 'সার্ভিস' },
-  ];
-
   return (
     <div>
       <div className="sm:flex sm:items-center mb-8">
         <div className="sm:flex-auto">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            ক্লাসিফাইডস
+            {title}
           </h2>
           <p className="mt-2 text-sm text-gray-700">
-            ব্যবহারকারীদের পোস্ট করা সব ক্লাসিফাইডস পরিচালনা করুন।
+            ব্যবহারকারীদের পোস্ট করা সব {title} পরিচালনা করুন।
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -155,27 +147,6 @@ export default function ClassifiedsPage() {
         </div>
       </div>
       
-      {/* Tabs */}
-      <div className="mb-6 border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`
-                whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium
-                ${activeTab === tab.id
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                }
-              `}
-            >
-              {tab.name}
-            </button>
-          ))}
-        </nav>
-      </div>
-
       {error && <div className="mt-4 mb-4 text-red-500 bg-red-50 p-3 rounded">{error}</div>}
 
       <div className="flow-root">
@@ -203,15 +174,15 @@ export default function ClassifiedsPage() {
                         {item.title}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {activeTab === 'jobs' && (
+                        {type === 'jobs' && (
                           item.type + ' | ' + (item.company?.name || 'Company') + 
                           (item.salary_min || item.salary_max 
                             ? ` | Salary: ${item.salary_min || 0}-${item.salary_max || 'Max'} ${item.salary_currency || 'OMR'}`
                             : item.price ? ` | ${item.price} OMR` : ' | Negotiable')
                         )}
-                        {activeTab === 'properties' && (item.type + ' | ' + item.category)}
-                        {activeTab === 'vehicles' && (item.make + ' ' + item.model + ' (' + item.year + ')')}
-                        {activeTab === 'services' && (item.category + ' | ' + item.service_type)}
+                        {type === 'properties' && (item.type + ' | ' + item.category)}
+                        {type === 'vehicles' && (item.make + ' ' + item.model + ' (' + item.year + ')')}
+                        {type === 'services' && (item.category + ' | ' + item.service_type)}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {item.city}
@@ -237,7 +208,7 @@ export default function ClassifiedsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 my-8">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900 capitalize">নতুন তৈরি করুন: {activeTab.slice(0, -1)}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 capitalize">নতুন তৈরি করুন: {type.slice(0, -1)}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-500">
                 <X className="h-5 w-5" />
               </button>
@@ -275,7 +246,7 @@ export default function ClassifiedsPage() {
               </div>
 
               {/* Jobs Specific Fields */}
-              {activeTab === 'jobs' && (
+              {type === 'jobs' && (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -315,7 +286,7 @@ export default function ClassifiedsPage() {
               )}
 
               {/* Properties Specific Fields */}
-              {activeTab === 'properties' && (
+              {type === 'properties' && (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
@@ -350,7 +321,7 @@ export default function ClassifiedsPage() {
               )}
 
               {/* Vehicles Specific Fields */}
-              {activeTab === 'vehicles' && (
+              {type === 'vehicles' && (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
@@ -420,7 +391,7 @@ export default function ClassifiedsPage() {
               )}
 
               {/* Services Specific Fields */}
-              {activeTab === 'services' && (
+              {type === 'services' && (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -466,7 +437,7 @@ export default function ClassifiedsPage() {
                   disabled={submitting || !formData.title}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center min-w-[80px] capitalize"
                 >
-                  {submitting ? 'সেভ হচ্ছে...' : editId ? 'সেভ করুন' : `নতুন ${activeTab.slice(0, -1)}`}
+                  {submitting ? 'সেভ হচ্ছে...' : editId ? 'সেভ করুন' : `নতুন ${type.slice(0, -1)}`}
                 </button>
               </div>
             </form>

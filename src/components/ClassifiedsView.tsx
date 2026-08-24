@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Trash2, Plus, X } from 'lucide-react';
 import api from '@/lib/api';
 
-export default function ClassifiedsView({ type, title }: { type: 'jobs' | 'properties' | 'vehicles' | 'services', title: string }) {
+export default function ClassifiedsView({ type, title, defaultCategory }: { type: 'jobs' | 'properties' | 'vehicles' | 'services', title: string, defaultCategory?: string }) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -56,7 +56,7 @@ export default function ClassifiedsView({ type, title }: { type: 'jobs' | 'prope
     } else if (type === 'vehicles') {
       initialData = { ...initialData, type: 'CAR', make: '', model: '', year: 2020, condition: 'USED_GOOD', transmission: 'AUTOMATIC', fuel_type: 'PETROL', price: '', mileage: '', color: '' };
     } else if (type === 'services') {
-      initialData = { ...initialData, category_name: 'Medical Services', service_type: '' };
+      initialData = { ...initialData, category_name: defaultCategory || 'Medical Services', service_type: '' };
     }
     setFormData(initialData);
     setSelectedImage(null);
@@ -124,6 +124,10 @@ export default function ClassifiedsView({ type, title }: { type: 'jobs' | 'prope
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const filteredData = defaultCategory && type === 'services'
+    ? data.filter(item => item.category === defaultCategory || item.category_name === defaultCategory)
+    : data;
+
   return (
     <div>
       <div className="sm:flex sm:items-center mb-8">
@@ -166,9 +170,9 @@ export default function ClassifiedsView({ type, title }: { type: 'jobs' | 'prope
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {loading ? (
                     <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">লোড হচ্ছে...</td></tr>
-                  ) : data.length === 0 ? (
+                  ) : filteredData.length === 0 ? (
                     <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">কোন তথ্য পাওয়া যায়নি।</td></tr>
-                  ) : data.map((item) => (
+                  ) : filteredData.map((item) => (
                     <tr key={item.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {item.title}

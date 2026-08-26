@@ -17,7 +17,8 @@ import {
   LogOut,
   ShoppingCart,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  UserSearch
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
@@ -47,6 +48,7 @@ const navigation = [
   { name: 'ব্যবহারকারী', href: '/users', icon: Users },
   { name: 'স্লাইডার', href: '/sliders', icon: ImageIcon },
   { name: 'চাকরি', href: '/jobs', icon: Briefcase },
+  { name: 'চাকরিপ্রার্থী', href: '/job-seekers', icon: UserSearch },
   { name: 'প্রপার্টি', href: '/properties', icon: Home },
   { name: 'যানবাহন', href: '/vehicles', icon: Car },
   { name: 'সার্ভিস', href: '/services', icon: Wrench, subItems: serviceCategories.map(cat => ({ name: cat.label, href: `/services?category=${encodeURIComponent(cat.name)}`, queryValue: cat.name })) },

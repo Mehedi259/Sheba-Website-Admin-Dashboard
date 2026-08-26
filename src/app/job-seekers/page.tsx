@@ -56,8 +56,8 @@ export default function JobSeekersPage() {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">পেশা/টাইটেল</th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">ইউজার</th>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">প্রোফাইল</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">ফোন নম্বর</th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">অভিজ্ঞতা (বছর)</th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">স্ট্যাটাস</th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">অ্যাকশন</span></th>
@@ -70,11 +70,25 @@ export default function JobSeekersPage() {
                     <tr><td colSpan={5} className="py-10 text-center text-sm text-gray-500">কোন তথ্য পাওয়া যায়নি।</td></tr>
                   ) : data.map((item) => (
                     <tr key={item.id}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {item.professional_title}
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
+                        <div className="flex items-center">
+                          <div className="h-10 w-10 flex-shrink-0">
+                            {item.user_avatar ? (
+                              <img className="h-10 w-10 rounded-full object-cover" src={item.user_avatar.startsWith('http') ? item.user_avatar : `https://helloomansheba.com${item.user_avatar}`} alt="" />
+                            ) : (
+                              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                <span className="text-gray-500 font-medium text-sm">{item.user_full_name?.charAt(0) || item.user_name?.charAt(0) || 'U'}</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="ml-4">
+                            <div className="font-medium text-gray-900">{item.professional_title}</div>
+                            <div className="text-gray-500">{item.user_full_name || item.user_name}</div>
+                          </div>
+                        </div>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {item.user_full_name || item.user_name}
+                        {item.phone || item.user_phone || '---'}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {item.years_of_experience}

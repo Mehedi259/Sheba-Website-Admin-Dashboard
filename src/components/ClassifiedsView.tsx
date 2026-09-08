@@ -10,6 +10,11 @@ export default function ClassifiedsView({ type, title, defaultCategory }: { type
   const [error, setError] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -18,12 +23,19 @@ export default function ClassifiedsView({ type, title, defaultCategory }: { type
   // Generic form data for all types
   const [formData, setFormData] = useState<any>({});
 
-  const fetchData = async () => {
+  const fetchData = async (page = 1) => {
     setLoading(true);
     setError('');
     try {
-      const response = await api.get(`/admin/${type}/`);
-      setData(response.data.results || response.data);
+      const response = await api.get(`/admin/${type}/?page=${page}`);
+      if (response.data && response.data.results) {
+        setData(response.data.results);
+        setTotalCount(response.data.count || 0);
+        setTotalPages(Math.ceil((response.data.count || 0) / 10)); // Assuming default page size is 10
+      } else {
+        setData(response.data);
+        setTotalPages(1);
+      }
     } catch (err: any) {
       setError(err.message || `Failed to fetch ${type}`);
     } finally {
@@ -32,16 +44,16 @@ export default function ClassifiedsView({ type, title, defaultCategory }: { type
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(currentPage);
     // Reset form when tab changes
     setFormData({});
-  }, [type]);
+  }, [type, currentPage]);
 
   const handleDelete = async (id: number) => {
     if (!window.confirm(`Delete this item?`)) return;
     try {
       await api.delete(`/admin/${type}/${id}/`);
-      setData(data.filter(item => item.id !== id));
+      fetchData(currentPage);
     } catch (err: any) {
       alert('Failed to delete');
     }
@@ -81,7 +93,7 @@ export default function ClassifiedsView({ type, title, defaultCategory }: { type
         setData(data.map(item => item.id === editId ? response.data : item));
       } else {
         response = await api.post(`/admin/${type}/`, formData);
-        setData([response.data, ...data]);
+        fetchData(currentPage);
       }
       
       // Upload image if selected
@@ -102,7 +114,7 @@ export default function ClassifiedsView({ type, title, defaultCategory }: { type
           await api.post('/classifieds/images/', imageFormData);
           
           // Re-fetch to get updated images if needed, or just let it be
-          fetchData();
+          fetchData(currentPage);
         } catch (imgErr) {
           console.error("Failed to upload image", imgErr);
         }
@@ -161,6 +173,7 @@ export default function ClassifiedsView({ type, title, defaultCategory }: { type
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">শিরোনাম</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">ব্যবহারকারী</th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">বিস্তারিত</th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">শহর</th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">স্ট্যাটাস</th>
@@ -176,6 +189,9 @@ export default function ClassifiedsView({ type, title, defaultCategory }: { type
                     <tr key={item.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                         {item.title}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {item.user_name || item.owner_name || 'N/A'}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {type === 'jobs' && (
@@ -203,6 +219,57 @@ export default function ClassifiedsView({ type, title, defaultCategory }: { type
                 </tbody>
               </table>
             </div>
+            
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4 rounded-lg shadow">
+                <div className="flex flex-1 justify-between sm:hidden">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+                <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm text-gray-700">
+                      Showing page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
+                      {totalCount > 0 && <span> ({totalCount} total items)</span>}
+                    </p>
+                  </div>
+                  <div>
+                    <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                      <button
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                      >
+                        <span className="sr-only">Previous</span>
+                        &larr;
+                      </button>
+                      <button
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                      >
+                        <span className="sr-only">Next</span>
+                        &rarr;
+                      </button>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            )}
+            
           </div>
         </div>
       </div>

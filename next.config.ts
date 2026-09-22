@@ -1,11 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  trailingSlash: true,
   async rewrites() {
     return [
       {
+        source: '/api/:path*/',
+        destination: 'http://188.245.212.240/api/:path*/', // Proxy to Hetzner Backend
+      },
+      {
         source: '/api/:path*',
-        destination: 'http://188.245.212.240/api/:path*/', // Proxy to Hetzner Backend with trailing slash
+        destination: 'http://188.245.212.240/api/:path*/', // Fallback Proxy to Hetzner Backend
       },
       {
         source: '/media/:path*',

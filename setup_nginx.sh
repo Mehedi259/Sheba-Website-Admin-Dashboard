@@ -2,6 +2,7 @@ cat << 'EOF' > /etc/nginx/sites-available/nextjs
 server {
     listen 80;
     server_name helloprobashsheba.com www.helloprobashsheba.com;
+    client_max_body_size 50M;
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -18,6 +19,7 @@ cat << 'EOF' > /etc/nginx/sites-available/admin_dashboard
 server {
     listen 80;
     server_name admin.helloprobashsheba.com;
+    client_max_body_size 50M;
 
     location / {
         proxy_pass http://127.0.0.1:3001;

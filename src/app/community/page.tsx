@@ -11,6 +11,7 @@ export default function CommunityPage() {
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -18,10 +19,47 @@ export default function CommunityPage() {
 
   const fetchPosts = async () => {
     try {
-      const response = await api.get('/admin/posts/');
-      setPosts(response.data.results || response.data);
+      const postsResponse = await api.get('/community/forum/posts/');
+      const postsData = postsResponse.data.results || postsResponse.data;
+      
+      let allUsers: any[] = [];
+      let currentUrl = '/admin/users/';
+      while (currentUrl) {
+        // Fix for absolute URLs from DRF
+        if (currentUrl.startsWith('http')) {
+          const urlObj = new URL(currentUrl);
+          currentUrl = `/admin/users/${urlObj.search}`;
+        }
+        
+        const usersResponse = await api.get(currentUrl);
+        const data = usersResponse.data;
+        if (data && data.results) {
+          allUsers = [...allUsers, ...data.results];
+          currentUrl = data.next;
+        } else {
+          allUsers = data || [];
+          currentUrl = null as any;
+        }
+      }
+      
+      const userMap = new Map();
+      allUsers.forEach((u: any) => {
+        if (u && u.id) {
+          userMap.set(String(u.id), u.email);
+        }
+      });
+      
+      const postsWithEmail = postsData.map((post: any) => {
+        const userId = post.author || post.user || post.author_id || post.user_id;
+        return {
+          ...post,
+          mapped_author_email: userId ? (userMap.get(String(userId)) || 'N/A') : 'N/A'
+        };
+      });
+
+      setPosts(postsWithEmail);
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch posts');
+      setError(err.message || 'Failed to fetch data');
     } finally {
       setLoading(false);
     }
@@ -34,7 +72,7 @@ export default function CommunityPage() {
   const handleDelete = async (id: number) => {
     if (!window.confirm('Delete this community post?')) return;
     try {
-      await api.delete(`/admin/posts/${id}/`);
+      await api.delete(`/community/forum/posts/${id}/`);
       setPosts(posts.filter(p => p.id !== id));
     } catch (err: any) {
       alert('Failed to delete');
@@ -42,6 +80,7 @@ export default function CommunityPage() {
   };
 
   const handleOpenModal = () => {
+    setNewTitle('');
     setNewContent('');
     setSelectedImage(null);
     setEditId(null);
@@ -49,6 +88,7 @@ export default function CommunityPage() {
   };
 
   const handleEdit = (post: any) => {
+    setNewTitle(post.title || '');
     setNewContent(post.content || '');
     setEditId(post.id);
     setSelectedImage(null);
@@ -65,23 +105,25 @@ export default function CommunityPage() {
     setSubmitting(true);
     try {
       const formData = new FormData();
+      formData.append('title', newTitle || 'Untitled');
       formData.append('content', newContent);
       if (selectedImage) {
         formData.append('image', selectedImage);
       }
       
       if (editId) {
-        const response = await api.put(`/admin/posts/${editId}/`, formData, {
+        const response = await api.put(`/community/forum/posts/${editId}/`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         setPosts(posts.map(p => p.id === editId ? response.data : p));
       } else {
-        const response = await api.post('/admin/posts/', formData, {
+        const response = await api.post('/community/forum/posts/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         setPosts([response.data, ...posts]);
       }
       setIsModalOpen(false);
+      setNewTitle('');
       setNewContent('');
       setSelectedImage(null);
       setEditId(null);
@@ -124,27 +166,35 @@ export default function CommunityPage() {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">কনটেন্ট</th>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">টাইটেল</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">কনটেন্ট</th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">লেখক</th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">ইমেইল</th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">লাইক</th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6"><span className="sr-only">অ্যাকশন</span></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {loading ? (
-                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">পোস্ট লোড হচ্ছে...</td></tr>
+                    <tr><td colSpan={6} className="py-10 text-center text-sm text-gray-500">পোস্ট লোড হচ্ছে...</td></tr>
                   ) : posts.length === 0 ? (
-                    <tr><td colSpan={4} className="py-10 text-center text-sm text-gray-500">কোনো পোস্ট পাওয়া যায়নি।</td></tr>
+                    <tr><td colSpan={6} className="py-10 text-center text-sm text-gray-500">কোনো পোস্ট পাওয়া যায়নি।</td></tr>
                   ) : posts.map((post) => (
                     <tr key={post.id}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                        {post.title ? (post.title.length > 30 ? post.title.substring(0, 30) + '...' : post.title) : 'কোন টাইটেল নেই'}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {post.content ? (post.content.length > 50 ? post.content.substring(0, 50) + '...' : post.content) : 'কোন কনটেন্ট নেই'}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {post.user_name || ''}
+                        {post.author_name || post.user_name || ''}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                        {post.likes_count || 0}
+                        {post.mapped_author_email || 'N/A'}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {post.likes_count || post.likes || 0}
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
                         <button onClick={() => handleEdit(post)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">এডিট</button>
@@ -170,6 +220,17 @@ export default function CommunityPage() {
               </button>
             </div>
             <form onSubmit={handleSavePost} className="p-4 space-y-4">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">টাইটেল</label>
+                <input
+                  type="text"
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-900"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="পোস্টের টাইটেল"
+                  required
+                />
+              </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">কনটেন্ট</label>
                 <textarea

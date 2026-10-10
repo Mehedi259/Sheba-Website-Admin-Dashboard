@@ -100,7 +100,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       )}>
         <div className="flex h-20 shrink-0 items-center px-6 gap-3 border-b border-gray-200">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/main-logo.png" alt="Sheba Admin" className="h-14 w-auto object-contain bg-gray-50 border border-gray-100 p-1.5 rounded-lg" />
+          <img src="/main-logo.png?v=2" alt="Sheba Admin" className="h-14 w-auto object-contain bg-gray-50 border border-gray-100 p-1.5 rounded-lg" />
           <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded border border-indigo-200">অ্যাডমিন</span>
         </div>
       <nav className="flex flex-1 flex-col px-4 py-4 overflow-y-auto">

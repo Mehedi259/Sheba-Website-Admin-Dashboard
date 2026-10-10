@@ -23,10 +23,11 @@ import {
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
 
-const serviceCategories = [
+export const serviceCategories = [
   { name: 'Specialist Doctor', label: 'স্পেশালিস্ট ডক্টর' },
   { name: 'Hospital', label: 'হসপিটাল' },
   { name: 'Ambulance', label: 'অ্যাম্বুলেন্স' },
+  { name: 'Pharmacy', label: 'ফার্মেসি' },
   { name: 'Police Station', label: 'পুলিশ স্টেশন' },
   { name: 'Embassy', label: 'এম্বাসি' },
   { name: 'Travel Agency', label: 'ট্রাভেল এজেন্সি' },
@@ -40,6 +41,15 @@ const serviceCategories = [
   { name: 'Visa Services', label: 'ভিসা সার্ভিস' },
   { name: 'Cleaning', label: 'ক্লিনিং' },
   { name: 'Plumbing', label: 'প্লাম্বিং' },
+  { name: 'Electrical', label: 'ইলেকট্রিশিয়ান' },
+  { name: 'AC Repair', label: 'এসি সার্ভিস' },
+  { name: 'Carpentry', label: 'কার্পেন্টার' },
+  { name: 'Painting', label: 'রং মিস্ত্রি' },
+  { name: 'Appliance Repair', label: 'ফ্রিজ সার্ভিস' },
+  { name: 'Mason', label: 'রাজমিস্ত্রি' },
+  { name: 'Mobile Technician', label: 'মোবাইল টেকনিশিয়ান' },
+  { name: 'Insurance', label: 'ইন্স্যুরেন্স' },
+  { name: 'Business', label: 'বিজনেস' },
   { name: 'Other', label: 'অন্যান্য' },
 ];
 

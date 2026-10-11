@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trash2, Plus, X } from 'lucide-react';
+import { Trash2, Plus, X, UserX } from 'lucide-react';
 import api from '@/lib/api';
 
 export default function CommunityPage() {
@@ -53,7 +53,8 @@ export default function CommunityPage() {
         const userId = post.author || post.user || post.author_id || post.user_id;
         return {
           ...post,
-          mapped_author_email: userId ? (userMap.get(String(userId)) || 'N/A') : 'N/A'
+          mapped_author_email: userId ? (userMap.get(String(userId)) || 'N/A') : 'N/A',
+          author_user_id: userId
         };
       });
 
@@ -76,6 +77,37 @@ export default function CommunityPage() {
       setPosts(posts.filter(p => p.id !== id));
     } catch (err: any) {
       alert('Failed to delete');
+    }
+  };
+
+  const handleSuspendUser = async (post: any) => {
+    const authorId = post.author_user_id || post.author || post.user || post.author_id || post.user_id;
+    const authorEmail = post.mapped_author_email;
+
+    if (!authorId) {
+      alert('ব্যবহারকারীর আইডি পাওয়া যায়নি।');
+      return;
+    }
+
+    const emailDisplay = authorEmail && authorEmail !== 'N/A' ? authorEmail : `ID: ${authorId}`;
+    const confirmMsg = `আপনি কি নিশ্চিতভাবে এই ইউজার (${emailDisplay})-কে সাসপেন্ড করতে চান?\n\nএর ফলে এই ইউজারের অ্যাকাউন্ট এবং তার করা সব পোস্ট মুছে ফেলা হবে।`;
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      // 1. Delete user account from backend
+      await api.delete(`/admin/users/${authorId}/`);
+
+      // 2. Also ensure this specific post is removed
+      try {
+        await api.delete(`/community/forum/posts/${post.id}/`);
+      } catch (e) {
+        // Ignored if already cascade-deleted
+      }
+
+      alert(`ব্যবহারকারী (${emailDisplay}) সফলভাবে সাসপেন্ড করা হয়েছে এবং তার সব পোস্ট মুছে দেওয়া হয়েছে!`);
+      fetchPosts();
+    } catch (err: any) {
+      alert('সাসপেন্ড করতে সমস্যা হয়েছে: ' + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -196,7 +228,15 @@ export default function CommunityPage() {
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                         {post.likes_count || post.likes || 0}
                       </td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleSuspendUser(post)}
+                          title="এই ইউজারকে সাসপেন্ড ও তার সব পোস্ট ডিলিট করুন"
+                          className="text-red-700 hover:text-red-900 bg-red-100 hover:bg-red-200 px-2 py-1 text-xs rounded flex items-center gap-1 font-semibold transition-colors"
+                        >
+                          <UserX className="h-3.5 w-3.5" />
+                          সাসপেন্ড
+                        </button>
                         <button onClick={() => handleEdit(post)} className="text-indigo-600 hover:text-indigo-900 px-2 py-1 text-xs bg-indigo-50 rounded">এডিট</button>
                         <button onClick={() => handleDelete(post.id)} className="text-red-600 hover:text-red-900 px-2 py-1 text-xs bg-red-50 rounded"><Trash2 className="h-4 w-4" /></button>
                       </td>

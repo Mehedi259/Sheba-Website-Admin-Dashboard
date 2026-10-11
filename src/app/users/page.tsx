@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, UserX } from 'lucide-react';
 import api from '@/lib/api';
 
 export default function UsersPage() {
@@ -95,7 +95,14 @@ export default function UsersPage() {
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-end gap-2">
                         {user.email !== 'admin@sheba.om' && (
-                          <button onClick={() => handleDelete(user.id)} className="text-red-600 hover:text-red-900"><Trash2 className="h-4 w-4" /></button>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            title="ইউজার ডিলিট / সাসপেন্ড করুন"
+                            className="text-red-700 hover:text-red-900 bg-red-100 hover:bg-red-200 px-2.5 py-1 text-xs rounded flex items-center gap-1 font-semibold transition-colors"
+                          >
+                            <UserX className="h-3.5 w-3.5" />
+                            সাসপেন্ড
+                          </button>
                         )}
                       </td>
                     </tr>

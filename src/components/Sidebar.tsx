@@ -18,7 +18,8 @@ import {
   ShoppingCart,
   ChevronDown,
   ChevronUp,
-  UserSearch
+  UserSearch,
+  CheckCircle2
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
@@ -66,6 +67,7 @@ const navigation = [
   { name: 'সংবাদ', href: '/news', icon: Newspaper },
   { name: 'কমিউনিটি', href: '/community', icon: MessageSquare },
   { name: 'মার্কেট', href: '/market', icon: ShoppingCart },
+  { name: 'সফল লিস্টিং', href: '/successful-listings', icon: CheckCircle2 },
 ];
 
 interface SidebarProps {

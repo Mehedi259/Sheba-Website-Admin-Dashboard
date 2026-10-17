@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { Search, X, RotateCw, UserX, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Search, X, RotateCw, UserX, Loader2, AlertCircle, CheckCircle2, BadgeCheck } from 'lucide-react';
 import api from '@/lib/api';
 
 const CACHE_KEY = 'sheba_admin_all_users_v1';
@@ -213,6 +213,42 @@ export default function UsersPage() {
 
   const searchTotalPages = Math.max(1, Math.ceil(filteredUsers.length / searchPageSize));
 
+  // User Verification Toggle
+  const [verifyingId, setVerifyingId] = useState<number | null>(null);
+
+  const handleToggleVerify = async (userId: number, currentStatus: boolean) => {
+    setVerifyingId(userId);
+    try {
+      const response = await api.post(`/admin/users/${userId}/verify/`);
+      const newStatus = response.data.is_verified;
+
+      // Update regular user list
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, is_verified: newStatus } : u))
+      );
+
+      // Update indexed users list
+      setAllUsers((prev) => {
+        const updated = prev.map((u) =>
+          u.id === userId ? { ...u, is_verified: newStatus } : u
+        );
+        try {
+          sessionStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify({ data: updated, timestamp: Date.now() })
+          );
+        } catch {
+          // Ignore
+        }
+        return updated;
+      });
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'ভেরিফাই করতে ব্যর্থ হয়েছে');
+    } finally {
+      setVerifyingId(null);
+    }
+  };
+
   // User Suspension / Deletion
   const handleDelete = async (userId: number) => {
     if (!window.confirm('আপনি কি নিশ্চিত যে এই ব্যবহারকারীকে সাসপেন্ড/ডিলিট করতে চান?')) return;
@@ -394,9 +430,16 @@ export default function UsersPage() {
                       <tr key={user.id} className="hover:bg-gray-50/60 transition-colors">
                         <td className="whitespace-nowrap py-3.5 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                           <div>
-                            <span className="font-semibold text-gray-900">
-                              {user.first_name || user.last_name ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : (user.name || 'নাম নেই')}
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-gray-900">
+                                {user.first_name || user.last_name ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : (user.name || 'নাম নেই')}
+                              </span>
+                              {user.is_verified && (
+                                <span title="ভেরিফাইড ব্যবহারকারী" className="inline-flex items-center text-blue-600">
+                                  <BadgeCheck className="h-4 w-4 fill-blue-600 text-white" />
+                                </span>
+                              )}
+                            </div>
                             <div className="text-xs text-gray-400 mt-0.5">@{user.username || 'unknown'}</div>
                           </div>
                         </td>
@@ -408,6 +451,24 @@ export default function UsersPage() {
                         </td>
                         <td className="relative whitespace-nowrap py-3.5 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                           <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => handleToggleVerify(user.id, user.is_verified)}
+                              disabled={verifyingId === user.id}
+                              title={user.is_verified ? "ভেরিফিকেশন প্রত্যাহার করুন" : "ইউজার ভেরিফাই করুন"}
+                              className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer disabled:opacity-50 ${
+                                user.is_verified
+                                  ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200'
+                                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200'
+                              }`}
+                            >
+                              {verifyingId === user.id ? (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <BadgeCheck className={`h-3.5 w-3.5 ${user.is_verified ? 'text-blue-600 fill-blue-100' : 'text-gray-400'}`} />
+                              )}
+                              {user.is_verified ? 'ভেরিফাইড' : 'ভেরিফাই'}
+                            </button>
+
                             {user.email !== 'admin@sheba.om' && (
                               <button
                                 onClick={() => handleDelete(user.id)}

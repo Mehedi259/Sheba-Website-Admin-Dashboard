@@ -17,7 +17,8 @@ import {
   ShieldCheck, 
   Inbox,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  ChevronLeft
 } from 'lucide-react';
 import api from '@/lib/api';
 
@@ -89,10 +90,10 @@ export default function SupportAdminPage() {
   };
 
   useEffect(() => {
-    if (selectedConversation?.messages) {
+    if (selectedConversation?.messages && selectedConversation.messages.length > 0) {
       scrollToBottom('auto');
     }
-  }, [selectedConversation?.messages?.length]);
+  }, [selectedConversation?.id, selectedConversation?.messages?.length]);
 
   // Fetch list of conversations
   const fetchConversations = useCallback(async (quiet: boolean = false) => {
@@ -106,7 +107,8 @@ export default function SupportAdminPage() {
 
       const response = await api.get('/admin/support/', { params });
       if (response.data) {
-        setConversations(response.data.results || []);
+        const results: SupportConversationItem[] = response.data.results || [];
+        setConversations(results);
         if (response.data.stats) {
           setStats(response.data.stats);
         }
@@ -132,12 +134,26 @@ export default function SupportAdminPage() {
     return () => clearInterval(timer);
   }, [fetchConversations]);
 
+  // Auto select first conversation on desktop if none selected
+  useEffect(() => {
+    if (conversations.length > 0 && selectedId === null) {
+      if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+        const first = conversations[0];
+        setSelectedId(first.id);
+        setSelectedConversation(first);
+        fetchConversationDetail(first.id);
+      }
+    }
+  }, [conversations]);
+
   // Fetch detail for selected conversation
   const fetchConversationDetail = async (id: number) => {
     setLoadingDetail(true);
     try {
       const response = await api.get(`/admin/support/${id}/`);
-      setSelectedConversation(response.data);
+      if (response.data) {
+        setSelectedConversation(response.data);
+      }
       // Mark as read in local list
       setConversations(prev => prev.map(conv => conv.id === id ? { ...conv, unread_by_admin: 0 } : conv));
       setStats(prev => ({
@@ -153,6 +169,7 @@ export default function SupportAdminPage() {
 
   const handleSelectConversation = (conv: SupportConversationItem) => {
     setSelectedId(conv.id);
+    setSelectedConversation(conv); // INSTANT response on click
     fetchConversationDetail(conv.id);
   };
 
@@ -223,28 +240,39 @@ export default function SupportAdminPage() {
     }
   };
 
-  const formatTime = (dateStr: string) => {
+  const formatTime = (dateStr?: string) => {
     if (!dateStr) return '';
-    const d = new Date(dateStr);
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return '';
+    }
   };
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('bn-BD', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('bn-BD', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+    } catch {
+      return '';
+    }
   };
 
   const getUserDisplayName = (u?: UserDetails) => {
     if (!u) return 'ব্যবহারকারী';
-    if (u.name) return u.name;
+    if (u.name && u.name.trim()) return u.name.trim();
     const full = `${u.first_name || ''} ${u.last_name || ''}`.trim();
     if (full) return full;
-    return u.username;
+    if (u.username && u.username.trim()) return u.username.trim();
+    return 'ব্যবহারকারী';
   };
 
   return (
@@ -296,12 +324,12 @@ export default function SupportAdminPage() {
       )}
 
       {/* Main Split Layout */}
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[640px] h-[calc(100vh-220px)] max-h-[850px]">
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[560px] h-[calc(100vh-220px)] max-h-[850px]">
         
         {/* Left Side: Threads Inbox */}
-        <div className="lg:col-span-5 border-r border-gray-200 flex flex-col h-full bg-gray-50/50">
+        <div className={`lg:col-span-5 border-r border-gray-200 flex flex-col h-full bg-gray-50/50 min-h-0 ${selectedId ? 'hidden lg:flex' : 'flex'}`}>
           {/* Search & Tabs */}
-          <div className="p-4 border-b border-gray-200 bg-white space-y-3">
+          <div className="p-4 border-b border-gray-200 bg-white space-y-3 shrink-0">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
               <input
@@ -337,7 +365,7 @@ export default function SupportAdminPage() {
           </div>
 
           {/* Conversation List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-gray-100">
+          <div className="flex-1 overflow-y-auto divide-y divide-gray-100 min-h-0">
             {loadingList ? (
               <div className="flex flex-col items-center justify-center h-48 text-gray-400">
                 <Loader2 className="w-6 h-6 animate-spin mb-2 text-indigo-600" />
@@ -355,6 +383,8 @@ export default function SupportAdminPage() {
                 const hasUnread = conv.unread_by_admin > 0;
                 const user = conv.user_details;
                 const name = getUserDisplayName(user);
+                const displayMessage = conv.last_message || 
+                  (conv.messages && conv.messages.length > 0 ? conv.messages[conv.messages.length - 1].text : 'কোনো বার্তা নেই');
 
                 return (
                   <div
@@ -362,7 +392,7 @@ export default function SupportAdminPage() {
                     onClick={() => handleSelectConversation(conv)}
                     className={`p-4 cursor-pointer transition-colors relative flex items-start gap-3 ${
                       isSelected 
-                        ? 'bg-indigo-50/70 border-l-4 border-indigo-600' 
+                        ? 'bg-indigo-50/80 border-l-4 border-indigo-600' 
                         : hasUnread 
                           ? 'bg-rose-50/30 hover:bg-gray-100/80 font-medium' 
                           : 'hover:bg-gray-100/60'
@@ -379,7 +409,7 @@ export default function SupportAdminPage() {
                         />
                       ) : (
                         <div className="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
-                          {name.charAt(0).toUpperCase()}
+                          {(name.charAt(0) || 'U').toUpperCase()}
                         </div>
                       )}
                       {user?.is_verified && (
@@ -398,7 +428,7 @@ export default function SupportAdminPage() {
                           </span>
                         </div>
                         <span className="text-[11px] text-gray-400 shrink-0">
-                          {formatTime(conv.last_message_at)}
+                          {formatTime(conv.last_message_at || conv.created_at)}
                         </span>
                       </div>
 
@@ -408,7 +438,7 @@ export default function SupportAdminPage() {
                       </div>
 
                       <p className={`text-xs truncate ${hasUnread ? 'text-gray-900 font-semibold' : 'text-gray-500'}`}>
-                        {conv.last_message || 'কথোপকথন শুরু হয়েছে...'}
+                        {displayMessage}
                       </p>
 
                       <div className="flex items-center gap-2 mt-2">
@@ -435,13 +465,22 @@ export default function SupportAdminPage() {
         </div>
 
         {/* Right Side: Chat Conversation View */}
-        <div className="lg:col-span-7 flex flex-col h-full bg-white">
+        <div className={`lg:col-span-7 flex flex-col h-full bg-white min-h-0 ${!selectedId ? 'hidden lg:flex' : 'flex'}`}>
           {selectedConversation ? (
             <>
               {/* Header */}
               <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-white shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="relative">
+                  {/* Mobile Back Button */}
+                  <button
+                    onClick={() => { setSelectedId(null); setSelectedConversation(null); }}
+                    className="lg:hidden p-1.5 -ml-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="সব মেসেজ"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+
+                  <div className="relative shrink-0">
                     {selectedConversation.user_details?.avatar || selectedConversation.user_details?.avatar_url ? (
                       /* eslint-disable-next-line @next/next/no-img-element */
                       <img
@@ -450,8 +489,8 @@ export default function SupportAdminPage() {
                         className="w-10 h-10 rounded-full object-cover border border-gray-200"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-sm">
-                        {getUserDisplayName(selectedConversation.user_details).charAt(0).toUpperCase()}
+                      <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                        {(getUserDisplayName(selectedConversation.user_details).charAt(0) || 'U').toUpperCase()}
                       </div>
                     )}
                   </div>
@@ -464,6 +503,9 @@ export default function SupportAdminPage() {
                         <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-700">
                           <Check className="w-2.5 h-2.5" /> ভেরিফাইড
                         </span>
+                      )}
+                      {loadingDetail && (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600 ml-1" />
                       )}
                     </div>
                     <div className="flex items-center gap-3 text-xs text-gray-500">
@@ -505,16 +547,16 @@ export default function SupportAdminPage() {
               </div>
 
               {/* Messages Container */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-50/40">
-                {loadingDetail ? (
-                  <div className="flex flex-col items-center justify-center h-48 text-gray-400">
-                    <Loader2 className="w-6 h-6 animate-spin mb-2 text-indigo-600" />
-                    <span className="text-xs">বার্তা লোড হচ্ছে...</span>
-                  </div>
-                ) : !selectedConversation.messages || selectedConversation.messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-48 text-gray-400 text-center">
-                    <MessageSquare className="w-8 h-8 mb-2" />
-                    <p className="text-xs">এখনো কোনো বার্তা পাঠানো হয়নি</p>
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gray-50/40 min-h-0">
+                {!selectedConversation.messages || selectedConversation.messages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-64 text-gray-400 text-center p-6">
+                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+                      <MessageSquare className="w-6 h-6 text-gray-400" />
+                    </div>
+                    <p className="text-sm font-semibold text-gray-700">এখনো কোনো বার্তা আসেনি</p>
+                    <p className="text-xs text-gray-400 mt-1 max-w-xs">
+                      ব্যবহারকারী কোনো বার্তা পাঠাননি। আপনি নিচের ইনপুট বক্স থেকে ব্যবহারকারীকে সরাসরি রিপ্লাই বা সাহায্য বার্তা পাঠাতে পারেন।
+                    </p>
                   </div>
                 ) : (
                   selectedConversation.messages.map((msg) => {
@@ -531,7 +573,7 @@ export default function SupportAdminPage() {
                             </span>
                           ) : (
                             <span className="font-semibold text-gray-600">
-                              {msg.sender_name}
+                              {msg.sender_name || 'ব্যবহারকারী'}
                             </span>
                           )}
                           <span>•</span>

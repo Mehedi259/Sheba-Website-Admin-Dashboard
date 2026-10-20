@@ -12,30 +12,40 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Match both /login, /login/ and any subpaths
+  const isLoginPage = pathname === '/login' || pathname?.startsWith('/login');
+
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
     
-    if (!token && pathname !== '/login') {
+    if (!token && !isLoginPage) {
+      setIsAuthenticated(false);
       router.push('/login');
-    } else if (token && pathname === '/login') {
+    } else if (token && isLoginPage) {
+      setIsAuthenticated(true);
       router.push('/');
     } else {
       setIsAuthenticated(!!token);
     }
     
     setLoading(false);
-  }, [pathname, router]);
+  }, [pathname, isLoginPage, router]);
+
+  // If on login page, render only the login screen without any sidebar or header
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50">Loading...</div>;
   }
 
-  // If we are on the login page, don't render Sidebar and Header
-  if (pathname === '/login') {
-    return <>{children}</>;
+  // If not authenticated and not on login page, don't flash the dashboard
+  if (!isAuthenticated) {
+    return null;
   }
 
-  // Render the dashboard layout for authenticated users
+  // Render the dashboard layout ONLY for authenticated users
   return (
     <div className="h-full flex overflow-hidden w-full relative">
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />

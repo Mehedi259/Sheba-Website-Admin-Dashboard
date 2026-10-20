@@ -20,7 +20,8 @@ import {
   ChevronUp,
   UserSearch,
   CheckCircle2,
-  Headphones
+  Headphones,
+  Settings
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useRouter } from 'next/navigation';
@@ -70,6 +71,7 @@ const navigation = [
   { name: 'মার্কেট', href: '/market', icon: ShoppingCart },
   { name: 'সফল লিস্টিং', href: '/successful-listings', icon: CheckCircle2 },
   { name: 'সাপোর্ট', href: '/support', icon: Headphones },
+  { name: 'সেটিংস', href: '/settings', icon: Settings },
 ];
 
 interface SidebarProps {
@@ -90,7 +92,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     setOpenMenus(prev => ({ ...prev, [name]: !prev[name] }));
   };
 
-  if (pathname === '/login') return null;
+  if (pathname === '/login' || pathname?.startsWith('/login')) return null;
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');

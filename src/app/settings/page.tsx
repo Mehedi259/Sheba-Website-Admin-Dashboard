@@ -32,8 +32,8 @@ export default function SettingsPage() {
     username: string;
     email: string;
   }>({
-    username: 'admin',
-    email: 'helloshebaofficial@gmail.com',
+    username: '',
+    email: '',
   });
 
   useEffect(() => {
@@ -42,13 +42,13 @@ export default function SettingsPage() {
       .then(res => {
         if (res.data) {
           setAdminProfile({
-            username: res.data.username || 'admin',
-            email: res.data.email || 'helloshebaofficial@gmail.com',
+            username: res.data.username || '',
+            email: res.data.email || '',
           });
         }
       })
       .catch(() => {
-        // Fallback to defaults
+        // Fallback
       });
   }, []);
 

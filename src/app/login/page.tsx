@@ -63,7 +63,7 @@ export default function LoginPage() {
                 name="username"
                 type="text"
                 autoComplete="username"
-                placeholder="helloshebaofficial@gmail.com বা ইউজারনেম"
+                placeholder="ইমেইল বা ইউজারনেম লিখুন"
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
